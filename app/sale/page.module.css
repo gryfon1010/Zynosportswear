@@ -1,0 +1,73 @@
+.page {
+  background: #ffffff;
+}
+
+.topRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.count {
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  color: #0d2a57;
+  text-transform: uppercase;
+}
+
+.card {
+  border: 0;
+}
+
+.imgWrap {
+  position: relative;
+  background: #f4f5f7;
+  overflow: hidden;
+}
+
+.img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #c91d2b;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.name {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #1b1f24;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.oldPrice {
+  color: #9aa1a9;
+  text-decoration: line-through;
+  font-size: 13px;
+}
+
+.price {
+  font-weight: 800;
+  color: #0d2a57;
+  font-size: 14px;
+}

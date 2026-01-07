@@ -1,0 +1,17 @@
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  width: 100%;
+  transform: translateY(0);
+  transition: transform 220ms ease;
+  will-change: transform;
+}
+
+.hidden {
+  transform: translateY(-120%);
+}
+
+.shown {
+  transform: translateY(0);
+}

@@ -1,0 +1,43 @@
+# Environment Variables Template (Development)
+
+Copy these into `/.env.local` (create it yourself). **Do not commit `.env.local`**.
+
+## Stripe (Test Mode)
+
+```
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+```
+
+## Firebase (Client SDK)
+
+From Firebase Console → Project Settings → General → Your apps → Web app config.
+
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+```
+
+## Firebase Admin (Server)
+
+From Firebase Console → Project Settings → Service accounts → Generate new private key.
+
+```
+FIREBASE_ADMIN_PROJECT_ID=...
+FIREBASE_ADMIN_CLIENT_EMAIL=...
+FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+```
+
+## Cloudinary
+
+From Cloudinary Dashboard.
+
+```
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
