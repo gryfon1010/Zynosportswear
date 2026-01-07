@@ -56,13 +56,6 @@ export default function CartPage() {
       ) : (
         <>
           <div style={{ marginTop: 16 }}>
-            {/* Header row for desktop */}
-            <div className="d-none d-md-flex border-bottom pb-2 mb-2 small text-uppercase fw-semibold">
-              <div style={{ flex: 1 }}>Product</div>
-              <div style={{ width: 160, textAlign: 'center' }}>Quantity</div>
-              <div style={{ width: 140, textAlign: 'right' }}>Total</div>
-            </div>
-
             {items.map((it, idx) => {
               const unit = Number(it.unitAmount || 0);
               const qty = Number(it.qty || 0) || 1;
@@ -72,46 +65,59 @@ export default function CartPage() {
               return (
                 <div
                   key={`${it.productId || it.sku || it.name}-${idx}`}
-                  className="d-flex align-items-center py-3 border-bottom gap-3 flex-wrap flex-md-nowrap"
+                  className="py-3 border-bottom"
                 >
-                  {/* Product column */}
-                  <div className="d-flex align-items-center gap-3" style={{ flex: 1, minWidth: 0 }}>
-                    {it.imageUrl ? (
-                      <div
-                        style={{
-                          width: 80,
-                          height: 80,
-                          flex: '0 0 auto',
-                          borderRadius: 4,
-                          overflow: 'hidden',
-                          backgroundColor: '#f8f9fa',
-                        }}
-                      >
-                        <img
-                          src={it.imageUrl}
-                          alt={it.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      </div>
-                    ) : null}
+                  <div
+                    className="d-flex align-items-center gap-3 flex-wrap justify-content-between"
+                  >
+                    {/* Product + total on first line */}
+                    <div className="d-flex align-items-center gap-3" style={{ flex: 1, minWidth: 0 }}>
+                      {it.imageUrl ? (
+                        <div
+                          style={{
+                            width: 80,
+                            height: 80,
+                            flex: '0 0 auto',
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                            backgroundColor: '#f8f9fa',
+                          }}
+                        >
+                          <img
+                            src={it.imageUrl}
+                            alt={it.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        </div>
+                      ) : null}
 
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 700 }}>{it.name}</div>
-                      {it.color ? (
-                        <div className="small text-muted">Color: {it.color}</div>
-                      ) : null}
-                      {it.size ? (
-                        <div className="small text-muted">Size: {it.size}</div>
-                      ) : null}
-                      <div className="small text-muted mt-1">${unitPrice.toFixed(2)} each</div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: 700 }}>{it.name}</div>
+                        {it.color ? (
+                          <div className="small text-muted">Color: {it.color}</div>
+                        ) : null}
+                        {it.size ? (
+                          <div className="small text-muted">Size: {it.size}</div>
+                        ) : null}
+                        <div className="small text-muted mt-1">${unitPrice.toFixed(2)} each</div>
+                      </div>
+                    </div>
+
+                    <div style={{ minWidth: 80, textAlign: 'right', fontWeight: 700 }}>
+                      ${lineTotal.toFixed(2)}
                     </div>
                   </div>
 
-                  {/* Quantity column */}
                   <div
-                    className="d-flex justify-content-center mt-2 mt-md-0"
-                    style={{ width: 160 }}
+                    className="d-flex justify-content-between align-items-center mt-2"
                   >
+                    <button
+                      type="button"
+                      className="btn btn-link p-0 small text-danger"
+                      onClick={() => remove(idx)}
+                    >
+                      Remove
+                    </button>
                     <div className="d-inline-flex align-items-center border rounded">
                       <button
                         type="button"
@@ -141,36 +147,23 @@ export default function CartPage() {
                       </button>
                     </div>
                   </div>
-
-                  {/* Total + remove */}
-                  <div
-                    className="d-flex flex-column align-items-end ms-auto mt-2 mt-md-0"
-                    style={{ width: 140 }}
-                  >
-                    <div style={{ fontWeight: 700 }}>${lineTotal.toFixed(2)}</div>
-                    <button
-                      type="button"
-                      className="btn btn-link p-0 small text-danger mt-1"
-                      onClick={() => remove(idx)}
-                    >
-                      Remove
-                    </button>
-                  </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="d-flex justify-content-end" style={{ marginTop: 16 }}>
-            <div style={{ minWidth: 260 }}>
-              <div className="d-flex justify-content-between mb-2">
-                <div style={{ fontWeight: 700 }}>Subtotal</div>
-                <div style={{ fontWeight: 700 }}>${(totals.subtotal / 100).toFixed(2)}</div>
-              </div>
-              <Link href="/checkout" className="btn btn-primary w-100 mt-2">
-                Checkout
-              </Link>
+          <div style={{ marginTop: 24 }}>
+            <div className="d-flex justify-content-between mb-2">
+              <div style={{ fontWeight: 700 }}>Subtotal</div>
+              <div style={{ fontWeight: 700 }}>${(totals.subtotal / 100).toFixed(2)}</div>
             </div>
+            <Link
+              href="/checkout"
+              className="btn w-100 text-uppercase fw-semibold"
+              style={{ backgroundColor: '#d10024', borderColor: '#d10024', color: '#ffffff' }}
+            >
+              Checkout = ${(totals.subtotal / 100).toFixed(2)}
+            </Link>
           </div>
         </>
       )}
