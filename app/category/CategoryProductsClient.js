@@ -46,6 +46,8 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
   const [cartItems, setCartItems] = useState([]);
   const [hoverImageIndex, setHoverImageIndex] = useState({});
   const [hoveredProductId, setHoveredProductId] = useState(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [openSections, setOpenSections] = useState({
     availability: true,
     category: true,
@@ -153,6 +155,33 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
     const sorter = sorters[sortKey] || sorters.featured;
     return list.sort(sorter);
   }, [initialProducts, filters, sortKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Detect touch / coarse pointer devices
+    const hasTouch =
+      'ontouchstart' in window ||
+      (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    setIsTouchDevice(hasTouch);
+
+    // Detect mobile viewport by width so Quick View is always visible on small screens
+    const mql = window.matchMedia('(max-width: 991.98px)');
+
+    function handleViewportChange(e) {
+      setIsMobileViewport(e.matches);
+    }
+
+    handleViewportChange(mql);
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', handleViewportChange);
+      return () => mql.removeEventListener('change', handleViewportChange);
+    }
+
+    // Fallback for older browsers
+    mql.addListener(handleViewportChange);
+    return () => mql.removeListener(handleViewportChange);
+  }, []);
 
   function toggleFilter(kind, value) {
     setFilters((prev) => {
@@ -520,7 +549,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
         {filteredAndSorted.length === 0 ? (
           <div className="text-muted small">No products match these filters.</div>
         ) : (
-          <div className="row g-3" style={{ marginTop: -24 }}>
+          <div className="row g-3" style={{ marginTop: 8 }}>
             {filteredAndSorted.map((p, productIndex) => {
               const key = productIndex;
               const imgs = Array.isArray(p.images) ? p.images : [];
@@ -531,13 +560,19 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                 : null;
               const hasDiscount = Number(p.discountPercent || 0) > 0;
               const isHovered = hoveredProductId === p.id;
+              // On mobile viewport, always show Quick View; on desktop, only on hover.
+              const showHoverUi = isMobileViewport ? true : isHovered;
 
               return (
                 <div className="col-12 col-sm-6 col-lg-4" key={p.id}>
                   <div
                     className="card h-100 border-0 shadow-sm position-relative"
-                    onMouseEnter={() => setHoveredProductId(p.id)}
+                    onMouseEnter={() => {
+                      if (isMobileViewport) return;
+                      setHoveredProductId(p.id);
+                    }}
                     onMouseLeave={() => {
+                      if (isMobileViewport) return;
                       setHoveredProductId((prev) => (prev === p.id ? null : prev));
                       setHoverIndex(key, 0);
                     }}
@@ -566,7 +601,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                           <div
                             style={{ position: 'relative', height: 220, overflow: 'hidden' }}
                             onMouseMove={(e) => {
-                              if (!imgs.length) return;
+                              if (isMobileViewport || !imgs.length) return;
                               const rect = e.currentTarget.getBoundingClientRect();
                               const x = e.clientX - rect.left;
                               const ratio = rect.width > 0 ? x / rect.width : 0;
@@ -579,6 +614,11 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                                 idx = ratio < 0.5 ? 0 : 1;
                               }
                               setHoverIndex(key, idx);
+                            }}
+                            onClick={() => {
+                              if (!isMobileViewport || !imgs.length) return;
+                              const nextIdx = imgs.length > 0 ? (activeIdx + 1) % Math.min(imgs.length, 3) : 0;
+                              setHoverIndex(key, nextIdx);
                             }}
                           >
                             {imgs.slice(0, 3).map((img, idx) => (
@@ -602,7 +642,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                           </div>
                         </a>
 
-                        {isHovered && imgs.length > 1 ? (
+                        {showHoverUi && imgs.length > 1 ? (
                           <div
                             className="d-flex justify-content-center gap-1 position-absolute"
                             style={{ bottom: 36, left: 0, right: 0 }}
@@ -627,7 +667,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                           </div>
                         ) : null}
 
-                        {isHovered ? (
+                        {showHoverUi ? (
                           <button
                             type="button"
                             className="btn btn-dark btn-sm position-absolute w-100"

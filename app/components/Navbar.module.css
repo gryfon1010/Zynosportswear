@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 18px 0;
+  padding: 10px 0;
 }
 
 .brand {
@@ -330,5 +330,35 @@
   .dropdownLink {
     padding: 10px 0;
     border-top: 0;
+  }
+
+  /* Mobile navbar: remove shaded container lines and default backgrounds */
+  .mobileNavItem {
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  .mobileNavButton {
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  /* Mobile navbar close (X) button inside opened menu */
+  .mobileCloseButton {
+    position: absolute;
+    top: -4px;
+    right: 8px; /* far right side of navbar, aligned horizontally with hamburger */
+    border: 1px solid #d10024;
+    background: #d10024;
+    font-size: 20px;
+    line-height: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #000000; /* black X on red background */
+  }
+
+  .mobileCloseButton:active {
+    background: #a0001b;
+    border-color: #a0001b;
   }
 }
