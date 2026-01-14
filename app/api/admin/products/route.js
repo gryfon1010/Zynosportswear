@@ -56,6 +56,8 @@ export async function POST(req) {
           .map((it) => ({
             url: it?.url ? assertUrl(it.url, { field: 'image url', max: 1000 }) : null,
             alt: typeof it?.alt === 'string' ? it.alt.trim().slice(0, 120) : null,
+            // Optional color tag so we can show color-specific image sets on the product page.
+            color: typeof it?.color === 'string' && it.color.trim() ? it.color.trim().slice(0, 80) : null,
           }))
           .filter((it) => it.url)
           .slice(0, 20)
@@ -83,6 +85,11 @@ export async function POST(req) {
       ? assertString(body.material.trim(), { field: 'material', min: 1, max: 120 })
       : null;
 
+    // Optional long-form product description (may contain HTML). Trim but otherwise allow free text.
+    const description = typeof body?.description === 'string'
+      ? String(body.description).slice(0, 20000)
+      : '';
+
     const isBestSeller = body?.isBestSeller === true ? true : false;
 
     const now = new Date();
@@ -103,6 +110,7 @@ export async function POST(req) {
       },
       discountPercent,
       images,
+      description,
       inStock,
       colors,
       sizes,

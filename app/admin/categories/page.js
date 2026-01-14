@@ -156,11 +156,15 @@ export default function AdminCategoriesPage() {
 
     const payload = {
       name: form.name,
-      slug: form.slug,
       parentId: form.parentId ? form.parentId : null,
       sortOrder: Number(form.sortOrder || 0),
       imageUrl: form.imageUrl ? form.imageUrl.trim() : null,
     };
+
+    // Only send slug when non-empty so edits that leave slug blank don't fail validation.
+    if (typeof form.slug === 'string' && form.slug.trim()) {
+      payload.slug = form.slug.trim();
+    }
 
     try {
       if (isEditing) {
@@ -177,6 +181,15 @@ export default function AdminCategoriesPage() {
         });
       }
 
+      // Clear navbar categories cache so storefront picks up new names/slugs quickly.
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.removeItem('zyno_nav_categories_v4');
+        } catch {
+          // ignore
+        }
+      }
+
       if (user) await loadAll(user);
       resetForm();
     } catch (e2) {
@@ -189,6 +202,16 @@ export default function AdminCategoriesPage() {
     setError(null);
     try {
       await authedJson(`/api/admin/categories/${id}`, { method: 'DELETE' });
+
+      // Clear navbar categories cache on delete as well.
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.removeItem('zyno_nav_categories_v4');
+        } catch {
+          // ignore
+        }
+      }
+
       if (user) await loadAll(user);
       if (form.id === id) resetForm();
     } catch (e) {

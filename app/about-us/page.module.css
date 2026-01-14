@@ -1,0 +1,101 @@
+.page {
+  background: #ffffff;
+}
+
+.heroBar {
+  background: #0b2a56;
+  color: #ffffff;
+  padding: 46px 0;
+}
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.breadcrumb {
+  font-size: 12px;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #ffffff;
+}
+
+.breadcrumbSep {
+  margin: 0 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.breadcrumbCurrent {
+  color: #ffffff;
+}
+
+.contentSection {
+  padding: 48px 0 80px;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #9ca3af; /* slightly darker so it is clearly visible */
+  margin: 26px 0 34px;
+}
+
+.heading {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #0b2a56;
+  margin-bottom: 18px;
+}
+
+.copy {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #212529;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.emailLink {
+  color: #1bb8aa;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.emailLink:hover {
+  color: #148c7f;
+  text-decoration: underline;
+}
+
+.logoWrap {
+  margin-top: 30px;
+}
+
+.logoImg {
+  width: 170px;
+  height: auto;
+}
+
+@media (max-width: 767.98px) {
+  .heroInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .heroTitle {
+    font-size: 20px;
+  }
+}

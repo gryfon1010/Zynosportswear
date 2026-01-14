@@ -1,0 +1,104 @@
+.page {
+  background: #ffffff;
+}
+
+.heroBar {
+  background: #0b2a56;
+  color: #ffffff;
+  padding: 32px 0;
+}
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.breadcrumb {
+  font-size: 12px;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #ffffff;
+}
+
+.breadcrumbSep {
+  margin: 0 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.breadcrumbCurrent {
+  color: #ffffff;
+}
+
+.contentSection {
+  padding: 32px 0 64px;
+}
+
+.columnTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b2a56;
+  margin-bottom: 4px;
+}
+
+.columnDivider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0 0 24px;
+}
+
+.formPlaceholder {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.detailBlock {
+  margin-bottom: 18px;
+}
+
+.detailLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #111827;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.detailText {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.detailText a {
+  color: #0b2a56;
+  text-decoration: none;
+}
+
+.detailText a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 767.98px) {
+  .heroInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .heroTitle {
+    font-size: 20px;
+  }
+}

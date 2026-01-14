@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { readWishlist, writeWishlist } from '../lib/wishlist';
 import AddToCartButton from '../product/[slug]/AddToCartButton';
 
 const CART_KEY = 'zyno_cart_v1';
@@ -48,6 +49,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
   const [hoveredProductId, setHoveredProductId] = useState(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
   const [openSections, setOpenSections] = useState({
     availability: true,
     category: true,
@@ -183,6 +185,11 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
     return () => mql.removeListener(handleViewportChange);
   }, []);
 
+  useEffect(() => {
+    // Load wishlist from localStorage on mount
+    setWishlist(readWishlist());
+  }, []);
+
   function toggleFilter(kind, value) {
     setFilters((prev) => {
       if (kind === 'inStockOnly') return { ...prev, inStockOnly: !prev.inStockOnly };
@@ -193,6 +200,33 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
       if (next.has(key)) next.delete(key);
       else next.add(key);
       return { ...prev, [kind]: next };
+    });
+  }
+
+  function toggleWishlistForProduct(p) {
+    setWishlist((prev) => {
+      const exists = prev.some((it) => it.productId === p.id);
+      let next;
+      if (exists) {
+        next = prev.filter((it) => it.productId !== p.id);
+      } else {
+        const unitAmount = Number(p?.pricing?.unitAmount || 0);
+        const currency = String(p?.pricing?.currency || 'usd');
+        const imageUrl = Array.isArray(p.images) && p.images.length ? p.images[0].url : null;
+        next = [
+          ...prev,
+          {
+            productId: p.id,
+            slug: p.slug,
+            name: p.name,
+            unitAmount,
+            currency,
+            imageUrl,
+          },
+        ];
+      }
+      writeWishlist(next);
+      return next;
     });
   }
 
@@ -562,6 +596,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
               const isHovered = hoveredProductId === p.id;
               // On mobile viewport, always show Quick View; on desktop, only on hover.
               const showHoverUi = isMobileViewport ? true : isHovered;
+              const inWishlist = wishlist.some((it) => it.productId === p.id);
 
               return (
                 <div className="col-12 col-sm-6 col-lg-4" key={p.id}>
@@ -713,6 +748,16 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                           {p.colors.slice(0, 6).map((c) => renderColorDot(c))}
                         </div>
                       ) : null}
+
+                      <div className="d-flex justify-content-end mt-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => toggleWishlistForProduct(p)}
+                        >
+                          {inWishlist ? '♥ In wishlist' : '♡ Add to wishlist'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

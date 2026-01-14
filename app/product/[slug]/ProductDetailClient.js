@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import AddToCartButton from "./AddToCartButton";
+import { readWishlist, writeWishlist } from "../../lib/wishlist";
 
 export default function ProductDetailClient({ product }) {
-  const [activeIdx, setActiveIdx] = useState(0);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [qty, setQty] = useState(1);
-
-  const images = Array.isArray(product?.images) ? product.images.slice(0, 5) : [];
+  const [inWishlist, setInWishlist] = useState(false);
+  const [showDescription, setShowDescription] = useState(true);
+  const [zoomImage, setZoomImage] = useState(null);
+  const allImages = Array.isArray(product?.images) ? product.images : [];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -32,6 +34,11 @@ export default function ProductDetailClient({ product }) {
   }, []);
 
   useEffect(() => {
+    const items = readWishlist();
+    setInWishlist(items.some((it) => it.productId === product.id));
+  }, [product.id]);
+
+  useEffect(() => {
     if (Array.isArray(product?.sizes) && product.sizes.length && !selectedSize) {
       const first = String(product.sizes[0] || "").trim();
       if (first) setSelectedSize(first);
@@ -41,6 +48,22 @@ export default function ProductDetailClient({ product }) {
       if (first) setSelectedColor(first);
     }
   }, [product, selectedSize, selectedColor]);
+
+  // Normalize color strings for matching
+  function normalizeColor(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  // Pick images that match the selected color (if any), otherwise fall back to all images.
+  const images = useMemo(() => {
+    if (!allImages.length) return [];
+    if (selectedColor) {
+      const norm = normalizeColor(selectedColor);
+      const byColor = allImages.filter((img) => normalizeColor(img.color) === norm);
+      if (byColor.length) return byColor.slice(0, 5);
+    }
+    return allImages.slice(0, 5);
+  }, [allImages, selectedColor]);
 
   const priceInfo = useMemo(() => {
     const unitAmount = Number(product?.pricing?.unitAmount || 0);
@@ -62,32 +85,6 @@ export default function ProductDetailClient({ product }) {
     };
   }, [product]);
 
-  const handleMainMouseMove = (e) => {
-    if (isMobileViewport || !images.length) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const ratio = rect.width > 0 ? x / rect.width : 0;
-
-    let idx = 0;
-    const count = Math.min(images.length, 3);
-    if (count >= 3) {
-      if (ratio < 1 / 3) idx = 0;
-      else if (ratio < 2 / 3) idx = 1;
-      else idx = 2;
-    } else if (count === 2) {
-      idx = ratio < 0.5 ? 0 : 1;
-    }
-
-    setActiveIdx(idx);
-  };
-
-  const handleMainClick = () => {
-    if (!isMobileViewport || !images.length) return;
-    const count = Math.min(images.length, 3);
-    if (!count) return;
-    setActiveIdx((prev) => ((prev + 1) % count));
-  };
-
   const decrementQty = () => {
     setQty((prev) => (prev > 1 ? prev - 1 : 1));
   };
@@ -96,7 +93,34 @@ export default function ProductDetailClient({ product }) {
     setQty((prev) => (prev < 999 ? prev + 1 : 999));
   };
 
-  const image = images[activeIdx] || images[0] || null;
+  const image = images[0] || null;
+
+  const toggleWishlist = () => {
+    const current = readWishlist();
+    const exists = current.some((it) => it.productId === product.id);
+    let next;
+    if (exists) {
+      next = current.filter((it) => it.productId !== product.id);
+      setInWishlist(false);
+    } else {
+      const unitAmount = Number(product?.pricing?.unitAmount || 0);
+      const currency = String(product?.pricing?.currency || "usd");
+      const imageUrl = image ? image.url : null;
+      next = [
+        ...current,
+        {
+          productId: product.id,
+          slug: product.slug,
+          name: product.name,
+          unitAmount,
+          currency,
+          imageUrl,
+        },
+      ];
+      setInWishlist(true);
+    }
+    writeWishlist(next);
+  };
 
   return (
     <div className="container py-4">
@@ -110,58 +134,95 @@ export default function ProductDetailClient({ product }) {
 
       <div className="row g-4">
         <div className="col-12 col-lg-6">
-          <div className="border rounded bg-light d-flex align-items-center justify-content-center" style={{ minHeight: 420, position: "relative", overflow: "hidden" }}>
-            {image ? (
-              <div
-                style={{ position: "relative", width: "100%", height: 420, maxWidth: "100%" }}
-                onMouseMove={handleMainMouseMove}
-                onClick={handleMainClick}
-              >
-                {images.slice(0, 3).map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={img.url}
-                    alt={img.alt || product.name}
+          {image ? (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                gridAutoRows: 'minmax(0, 1fr)',
+                gap: 12,
+              }}
+            >
+              {images.slice(0, 4).map((img, idx) => (
+                <div
+                  key={idx}
+                  className="border rounded bg-light position-relative"
+                  style={{
+                    minHeight: 180,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setZoomImage(img)}
                     style={{
-                      objectFit: "contain",
-                      width: "100%",
-                      height: "100%",
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      transition: "opacity 0.2s ease",
-                      opacity: activeIdx === idx ? 1 : 0,
+                      border: 'none',
+                      padding: 0,
+                      margin: 0,
+                      backgroundColor: 'transparent',
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-muted">No image</div>
-            )}
-
-            {images.length > 1 ? (
-              <div className="d-flex justify-content-center" style={{ position: "absolute", bottom: 12, left: 0, right: 0, gap: 6 }}>
-                {images.slice(0, 3).map((img, idx) => {
-                  const active = activeIdx === idx;
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setActiveIdx(idx)}
-                      style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: "50%",
-                        border: "1px solid #ffffff",
-                        backgroundColor: active ? "#d10024" : "rgba(0,0,0,0.4)",
-                        padding: 0,
-                      }}
+                  >
+                    <img
+                      src={img.url}
+                      alt={img.alt || product.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
+                  </button>
+
+                  {/* Individual zoom icon per image */}
+                  <button
+                    type="button"
+                    onClick={() => setZoomImage(img)}
+                    style={{
+                      position: 'absolute',
+                      right: 8,
+                      top: 8,
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      border: 'none',
+                      backgroundColor: 'rgba(255,255,255,0.95)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      cursor: 'pointer',
+                    }}
+                    aria-label="View image fullscreen"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#000"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="21" y1="3" x2="14" y2="10" />
+                      <polyline points="9 21 3 21 3 15" />
+                      <line x1="3" y1="21" x2="10" y2="14" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="border rounded bg-light d-flex align-items-center justify-content-center" style={{ minHeight: 420 }}>
+              <div className="text-muted">No image</div>
+            </div>
+          )}
         </div>
 
         <div className="col-12 col-lg-6">
@@ -300,6 +361,13 @@ export default function ProductDetailClient({ product }) {
               className="btn w-100 text-uppercase fw-semibold"
               style={{ backgroundColor: '#d10024', borderColor: '#d10024', color: '#ffffff' }}
             />
+            <button
+              type="button"
+              className="btn btn-outline-secondary w-100 text-uppercase fw-semibold"
+              onClick={toggleWishlist}
+            >
+              {inWishlist ? '♥ In wishlist' : '♡ Add to wishlist'}
+            </button>
             <a
               className="btn btn-outline-secondary w-100 text-uppercase fw-semibold"
               href="/cart"
@@ -315,6 +383,48 @@ export default function ProductDetailClient({ product }) {
           </div>
         </div>
       </div>
+
+      {product?.description ? (
+        <div className="mt-4 pt-3 border-top">
+          <button
+            type="button"
+            className="w-100 d-flex align-items-center justify-content-between border-0 bg-transparent px-0 py-2"
+            onClick={() => setShowDescription((prev) => !prev)}
+            style={{ fontSize: 14 }}
+          >
+            <span style={{ fontWeight: 600 }}>Product Description</span>
+            <span style={{ fontSize: 20, lineHeight: 1 }}>{showDescription ? '−' : '+'}</span>
+          </button>
+          <hr className="mt-0" />
+          {showDescription ? (
+            <div
+              className="mt-2"
+              style={{ fontSize: 14, lineHeight: 1.6 }}
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
+          ) : null}
+        </div>
+      ) : null}
+      {zoomImage ? (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            zIndex: 1050,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onClick={() => setZoomImage(null)}
+        >
+          <img
+            src={zoomImage.url}
+            alt={zoomImage.alt || product.name}
+            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

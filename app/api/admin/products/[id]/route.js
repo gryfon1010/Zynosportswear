@@ -44,6 +44,7 @@ export async function PATCH(req, { params }) {
       .map((it) => ({
         url: it?.url ? assertUrl(it.url, { field: 'image url', max: 1000 }) : null,
         alt: typeof it?.alt === 'string' ? it.alt.trim().slice(0, 120) : null,
+        color: typeof it?.color === 'string' && it.color.trim() ? it.color.trim().slice(0, 80) : null,
       }))
       .filter((it) => it.url)
       .slice(0, 20);
@@ -59,6 +60,14 @@ export async function PATCH(req, { params }) {
       .map((v) => v.trim())
       .filter((v) => v.length)
       .slice(0, 50);
+  }
+
+  if (body?.description !== undefined) {
+    if (typeof body.description === 'string') {
+      updates.description = String(body.description).slice(0, 20000);
+    } else {
+      updates.description = '';
+    }
   }
 
   if (Array.isArray(body?.sizes)) {

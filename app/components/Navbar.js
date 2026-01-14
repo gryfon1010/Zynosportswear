@@ -580,6 +580,11 @@ export default function Navbar({ showBlackBar = true } = {}) {
                     SALE
                   </a>
                 </li>
+                <li className="nav-item">
+                  <a className={styles.navLink} href="/wishlist">
+                    WISHLIST
+                  </a>
+                </li>
               </ul>
 
               <div className="d-flex align-items-center gap-3 ms-auto">

@@ -12,6 +12,9 @@ export default function AdminProductsPage() {
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
+  const [csvFile, setCsvFile] = useState(null);
+  const [csvImporting, setCsvImporting] = useState(false);
+  const [csvResult, setCsvResult] = useState(null);
 
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -33,6 +36,7 @@ export default function AdminProductsPage() {
     material: '',
     isBestSeller: false,
     images: [],
+    description: '',
   });
 
   const isEditing = Boolean(form.id);
@@ -207,8 +211,57 @@ export default function AdminProductsPage() {
       material: '',
       isBestSeller: false,
       images: [],
+      description: '',
     });
     setUploadFile(null);
+    setCsvFile(null);
+    setCsvImporting(false);
+    setCsvResult(null);
+  }
+
+  async function onImportCsv() {
+    if (!csvFile) {
+      setError('Please choose a CSV file first.');
+      return;
+    }
+
+    setError(null);
+    setCsvResult(null);
+    setCsvImporting(true);
+    try {
+      const userNow = auth.currentUser;
+      if (!userNow) throw new Error('Not signed in');
+      const token = await userNow.getIdToken();
+
+      const formData = new FormData();
+      formData.append('file', csvFile);
+
+      const res = await fetch('/api/admin/products/import', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || `Import failed (${res.status})`);
+      }
+
+      setCsvResult({
+        totalRows: data.totalRows || 0,
+        created: data.created || 0,
+        updated: data.updated || 0,
+        withoutCategory: data.withoutCategory || 0,
+      });
+
+      if (user) await loadAll(user);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Import failed');
+    } finally {
+      setCsvImporting(false);
+    }
   }
 
   async function uploadToCloudinary() {
@@ -245,7 +298,7 @@ export default function AdminProductsPage() {
       setForm((p) => {
         const nextImages = Array.isArray(p.images) ? [...p.images] : [];
         if (nextImages.length >= 6) return p;
-        nextImages.push({ url, alt: '' });
+        nextImages.push({ url, alt: '', color: '' });
         return { ...p, images: nextImages };
       });
     } catch (e) {
@@ -274,6 +327,7 @@ export default function AdminProductsPage() {
       material: typeof p.material === 'string' ? p.material : '',
       isBestSeller: p.isBestSeller === true,
       images: Array.isArray(p.images) ? p.images : img0 ? [img0] : [],
+      description: typeof p.description === 'string' ? p.description : '',
     });
   }
 
@@ -318,6 +372,7 @@ export default function AdminProductsPage() {
       isBestSeller: form.isBestSeller === true,
       categoryIds: Array.isArray(form.categoryIds) ? form.categoryIds : [],
       images,
+      description: typeof form.description === 'string' ? form.description : '',
     };
 
     try {
@@ -576,6 +631,49 @@ export default function AdminProductsPage() {
 
       <div className="card mt-3">
         <div className="card-body">
+          <div style={{ fontWeight: 900, marginBottom: 8 }}>Bulk import from CSV</div>
+          <div style={{ fontSize: 13, color: '#6c757d', marginBottom: 10 }}>
+            Upload your full product CSV. Existing products with the same SKU (or slug) will be updated; new ones will be created.
+          </div>
+          <div className="d-flex flex-column flex-md-row align-items-start gap-2">
+            <input
+              className="form-control"
+              type="file"
+              accept=".csv,text/csv"
+              onChange={(e) => {
+                const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+                setCsvFile(file);
+                setCsvResult(null);
+              }}
+              style={{ maxWidth: 320 }}
+            />
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={onImportCsv}
+              disabled={csvImporting}
+            >
+              {csvImporting ? 'Importing…' : 'Import CSV'}
+            </button>
+          </div>
+          {csvResult ? (
+            <div className="mt-2" style={{ fontSize: 13 }}>
+              <div>
+                Imported rows: <strong>{csvResult.totalRows}</strong>
+              </div>
+              <div>
+                Created: <strong>{csvResult.created}</strong>, Updated: <strong>{csvResult.updated}</strong>
+              </div>
+              <div>
+                Rows without matched category: <strong>{csvResult.withoutCategory}</strong>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="card mt-3">
+        <div className="card-body">
           <div style={{ fontWeight: 900, marginBottom: 10 }}>{isEditing ? 'Edit product' : 'Add product'}</div>
 
           <form className="row g-3" onSubmit={onSubmit}>
@@ -673,6 +771,20 @@ export default function AdminProductsPage() {
               />
             </div>
 
+            <div className="col-12">
+              <label className="form-label">Product description (optional)</label>
+              <textarea
+                className="form-control"
+                rows={5}
+                value={form.description}
+                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                placeholder="Long-form description or HTML (paragraphs, bullet lists, etc.)"
+              />
+              <div style={{ marginTop: 6, fontSize: 12, color: '#6c757d' }}>
+                This will appear on the product page under “Product Description”. You can paste plain text or HTML.
+              </div>
+            </div>
+
             <div className="col-12 col-md-4">
               <label className="form-label">Material (optional)</label>
               <input
@@ -711,7 +823,7 @@ export default function AdminProductsPage() {
               {Array.isArray(form.images) && form.images.length ? (
                 <div className="d-flex flex-column gap-2">
                   {form.images.map((img, idx) => (
-                    <div key={idx} className="d-flex align-items-center gap-2">
+                    <div key={idx} className="d-flex align-items-center gap-2 flex-wrap">
                       <div style={{ width: 60, height: 60, overflow: 'hidden', borderRadius: 4, border: '1px solid #dee2e6' }}>
                         {img.url ? (
                           <img
@@ -721,19 +833,34 @@ export default function AdminProductsPage() {
                           />
                         ) : null}
                       </div>
-                      <input
-                        className="form-control form-control-sm"
-                        placeholder="Alt text"
-                        value={img.alt || ''}
-                        onChange={(e) =>
-                          setForm((p) => {
-                            const next = Array.isArray(p.images) ? [...p.images] : [];
-                            if (!next[idx]) return p;
-                            next[idx] = { ...next[idx], alt: e.target.value };
-                            return { ...p, images: next };
-                          })
-                        }
-                      />
+                      <div className="flex-grow-1 d-flex flex-column flex-md-row gap-2">
+                        <input
+                          className="form-control form-control-sm"
+                          placeholder="Alt text"
+                          value={img.alt || ''}
+                          onChange={(e) =>
+                            setForm((p) => {
+                              const next = Array.isArray(p.images) ? [...p.images] : [];
+                              if (!next[idx]) return p;
+                              next[idx] = { ...next[idx], alt: e.target.value };
+                              return { ...p, images: next };
+                            })
+                          }
+                        />
+                        <input
+                          className="form-control form-control-sm"
+                          placeholder="Color tag (optional, e.g. Black/Gold)"
+                          value={img.color || ''}
+                          onChange={(e) =>
+                            setForm((p) => {
+                              const next = Array.isArray(p.images) ? [...p.images] : [];
+                              if (!next[idx]) return p;
+                              next[idx] = { ...next[idx], color: e.target.value };
+                              return { ...p, images: next };
+                            })
+                          }
+                        />
+                      </div>
                       <button
                         type="button"
                         className="btn btn-outline-danger btn-sm"

@@ -40,44 +40,48 @@ export default function LandingPage() {
       <section className={`container-fluid px-0 ${styles.heroGrid}`}>
         <div className="row g-0">
           <div className="col-12 col-md-3">
-            <a href="/category/sports-wear" className="text-decoration-none">
+            <a href="/category/boxing" className="text-decoration-none">
               <div className={styles.heroTile}>
+                <div className={styles.heroTag}>BOXING</div>
                 <img
                   src="https://zynosportswear.com/wp-content/uploads/2024/06/btn1-1.jpg"
-                  alt="Team Wear"
+                  alt="Boxing"
                   className={styles.heroImg}
                 />
               </div>
             </a>
           </div>
           <div className="col-12 col-md-3">
-            <a href="/category/outer-wear" className="text-decoration-none">
+            <a href="/category/mma" className="text-decoration-none">
               <div className={styles.heroTile}>
+                <div className={styles.heroTag}>MMA</div>
                 <img
                   src="https://zynosportswear.com/wp-content/uploads/2024/06/btn2.jpg"
-                  alt="Outer Wear"
+                  alt="MMA"
                   className={styles.heroImg}
                 />
               </div>
             </a>
           </div>
           <div className="col-12 col-md-3">
-            <a href="/category/fitness-wear" className="text-decoration-none">
+            <a href="/category/fitness" className="text-decoration-none">
               <div className={styles.heroTile}>
+                <div className={styles.heroTag}>FITNESS</div>
                 <img
                   src="https://zynosportswear.com/wp-content/uploads/2024/06/btn4.jpg"
-                  alt="Fitness Wear"
+                  alt="Fitness"
                   className={styles.heroImg}
                 />
               </div>
             </a>
           </div>
           <div className="col-12 col-md-3">
-            <a href="/category/sublimated-garments" className="text-decoration-none">
+            <a href="/category/apparel" className="text-decoration-none">
               <div className={styles.heroTile}>
+                <div className={styles.heroTag}>APPAREL</div>
                 <img
                   src="https://zynosportswear.com/wp-content/uploads/2024/06/btn3.jpg"
-                  alt="Sublimated"
+                  alt="Apparel"
                   className={styles.heroImg}
                 />
               </div>
@@ -245,59 +249,6 @@ export default function LandingPage() {
           <Script src="//widget.tagembed.com/embed.min.js" strategy="afterInteractive" />
         </div>
       </section>
-
-      <footer className={styles.footer}>
-        <div className="container">
-          <div className="row gy-4">
-            <div className="col-12 col-md-3">
-              <div className={styles.footerTitle}>INFORMATION</div>
-              <a className={styles.footerLink} href="/landingpage">Home</a>
-              <a className={styles.footerLink} href="/about-us/">About us</a>
-              <a className={styles.footerLink} href="/contact-us/">Contact us</a>
-            </div>
-            <div className="col-12 col-md-3">
-              <div className={styles.footerTitle}>PRODUCTS</div>
-              <a className={styles.footerLink} href="/category/sports-wear">SPORTS WEAR</a>
-              <a className={styles.footerLink} href="/category/outer-wear">OUTER WEAR</a>
-              <a className={styles.footerLink} href="/category/sublimated-garments">SUBLIMATED GARMENTS</a>
-              <a className={styles.footerLink} href="/category/fitness-wear">FITNESS WEAR</a>
-              <a className={styles.footerLink} href="/category/accessories">ACCESSORIES</a>
-            </div>
-            <div className="col-12 col-md-3">
-              <div className={styles.footerTitle}>FOLLOW US</div>
-              <a className={styles.footerLink} href="#">Facebook</a>
-              <a className={styles.footerLink} href="#">Twitter</a>
-              <a className={styles.footerLink} href="#">Instagram</a>
-            </div>
-            <div className="col-12 col-md-3">
-              <div className={styles.footerTitle}>CONTACT US</div>
-              <div className={styles.footerSmall}>
-                H261, Phase2, Model Town, Pasrur Road,<br />
-                Sialkot 51310 PAKISTAN
-              </div>
-              <div className={styles.footerSmall} style={{ marginTop: 10 }}>
-                Phone: +92 331 4083626
-                <br />
-                Phone: +92 305 1982599
-                <br />
-                Email: info@zynosportswear.com
-                <br />
-                Web: www.zynosportswear.com
-              </div>
-            </div>
-          </div>
-
-          <hr style={{ borderColor: 'rgba(255,255,255,0.15)', margin: '20px 0' }} />
-          <div className="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
-            <div className={styles.footerSmall}>© 2024 - 25 ZYNO SPORTSWEAR | All Rights Reserved</div>
-            <img
-              src="/images/Navbar%20logo.png"
-              alt="Zyno Sportswear"
-              style={{ width: 90, height: 'auto', opacity: 0.9 }}
-            />
-          </div>
-        </div>
-      </footer>
 
       <FloatingActions />
     </main>

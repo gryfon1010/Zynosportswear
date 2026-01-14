@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 import BootstrapClient from './BootstrapClient';
+import AppShell from './AppShell';
 
 export const metadata = {
   title: 'Zynosportswear',
@@ -17,7 +18,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <BootstrapClient />
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
