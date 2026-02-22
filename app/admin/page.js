@@ -40,18 +40,64 @@ export default function AdminHomePage() {
   }
 
   if (state.loading) {
-    return <div className="py-5 text-center">Loading…</div>;
+    return (
+      <div
+        className="d-flex justify-content-center align-items-start"
+        style={{ minHeight: '60vh', paddingTop: '60px' }}
+      >
+        <div className="text-center" style={{ color: '#6c757d', fontSize: 14 }}>
+          Loading admin dashboard…
+        </div>
+      </div>
+    );
   }
 
   if (!state.user) {
     return (
-      <div className="text-center" style={{ padding: '40px 0' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 900 }}>Admin</h1>
-        <div style={{ color: '#6c757d', marginTop: 8 }}>You are not signed in.</div>
-        <div style={{ marginTop: 16 }}>
-          <Link className="btn btn-primary" href="/admin/login">
-            Go to login
-          </Link>
+      <div
+        className="d-flex justify-content-center align-items-start"
+        style={{ minHeight: '60vh', paddingTop: '60px' }}
+      >
+        <div
+          className="card shadow-sm"
+          style={{
+            maxWidth: 480,
+            width: '100%',
+            borderRadius: 10,
+            border: '1px solid rgba(11,42,86,0.08)',
+          }}
+        >
+          <div className="card-body text-center py-4 px-4">
+            <div
+              className="badge text-uppercase mb-3"
+              style={{
+                backgroundColor: 'rgba(27,184,170,0.12)',
+                color: '#0b2a56',
+                fontWeight: 700,
+                letterSpacing: 1,
+                borderRadius: 999,
+                padding: '6px 14px',
+              }}
+            >
+              Admin access required
+            </div>
+            <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>You are not signed in</h1>
+            <p style={{ fontSize: 14, color: '#6c757d', marginBottom: 20 }}>
+              To manage products, categories and orders, please sign in with your admin account.
+            </p>
+            <div className="d-flex flex-column flex-sm-row justify-content-center gap-2">
+              <Link
+                className="btn btn-primary"
+                href="/admin/login"
+                style={{ backgroundColor: '#1bb8aa', borderColor: '#1bb8aa' }}
+              >
+                Go to admin login
+              </Link>
+              <Link className="btn btn-outline-secondary" href="/">
+                Back to storefront
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -61,14 +107,29 @@ export default function AdminHomePage() {
 
   return (
     <div>
-      <div className="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+      <div
+        className="d-flex align-items-start justify-content-between gap-3 flex-wrap"
+        style={{ marginTop: 6, marginBottom: 16 }}
+      >
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
+          <h1
+            style={{
+              fontSize: 26,
+              fontWeight: 900,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+              marginBottom: 4,
+              color: '#0b2a56',
+            }}
+          >
             Admin Dashboard
           </h1>
           <div style={{ color: '#6c757d', fontSize: 13 }}>{state.user.email}</div>
         </div>
-        <button className="btn btn-outline-secondary btn-sm" onClick={onLogout}>
+        <button
+          className="btn btn-outline-secondary btn-sm admin-outline-btn admin-logout-btn"
+          onClick={onLogout}
+        >
           Logout
         </button>
       </div>
@@ -100,63 +161,128 @@ export default function AdminHomePage() {
           </div>
         </div>
       ) : (
-        <div className="mt-4">
-          <div className="row g-3">
-            <div className="col-12 col-md-6 col-lg-4">
-              <div className="card h-100 shadow-sm border-0">
-                <div className="card-body">
-                  <div style={{ fontWeight: 900 }}>Categories</div>
-                  <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>Create & organize product categories.</div>
-                  <Link className="btn btn-primary btn-sm mt-3" href="/admin/categories">
-                    Manage categories
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="col-12 col-md-6 col-lg-4">
-              <div className="card h-100 shadow-sm border-0">
-                <div className="card-body">
-                  <div style={{ fontWeight: 900 }}>Products</div>
-                  <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>Create products and upload images.</div>
-                  <Link className="btn btn-primary btn-sm mt-3" href="/admin/products">
-                    Manage products
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="col-12 col-md-6 col-lg-4">
-              <div className="card h-100 shadow-sm border-0">
-                <div className="card-body">
-                  <div style={{ fontWeight: 900 }}>Featured</div>
-                  <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>Pick featured products for the landing page.</div>
-                  <Link className="btn btn-primary btn-sm mt-3" href="/admin/featured">
-                    Manage featured
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="col-12 col-md-6 col-lg-4">
-              <div className="card h-100 shadow-sm border-0">
-                <div className="card-body">
-                  <div style={{ fontWeight: 900 }}>Orders</div>
-                  <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>View and manage customer orders.</div>
-                  <Link className="btn btn-primary btn-sm mt-3" href="/admin/orders">
-                    View orders
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-md-6 col-lg-4">
-              <div className="card h-100 shadow-sm border-0">
-                <div className="card-body">
-                  <div style={{ fontWeight: 900 }}>Navbar Image Categories</div>
-                  <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>
-                    Configure right-side image tiles for main navbar categories.
+        <div className="mt-3">
+          <div
+            className="card border-0 shadow-sm"
+            style={{ borderRadius: 10, backgroundColor: '#f8fafc' }}
+          >
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-12 col-md-6 col-lg-4">
+                  <div
+                    className="card h-100 border-0 shadow-sm"
+                    style={{
+                      borderRadius: 10,
+                      borderTop: '3px solid #1bb8aa',
+                    }}
+                  >
+                    <div className="card-body">
+                      <div style={{ fontWeight: 900, color: '#0b2a56' }}>Categories</div>
+                      <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>
+                        Create & organize product categories.
+                      </div>
+                      <Link
+                        className="btn btn-sm mt-3"
+                        href="/admin/categories"
+                        style={{ backgroundColor: '#1bb8aa', borderColor: '#1bb8aa', color: '#ffffff' }}
+                      >
+                        Manage categories
+                      </Link>
+                    </div>
                   </div>
-                  <Link className="btn btn-primary btn-sm mt-3" href="/admin/navbar-image-categories">
-                    Manage image tiles
-                  </Link>
+                </div>
+                <div className="col-12 col-md-6 col-lg-4">
+                  <div
+                    className="card h-100 border-0 shadow-sm"
+                    style={{
+                      borderRadius: 10,
+                      borderTop: '3px solid #1bb8aa',
+                    }}
+                  >
+                    <div className="card-body">
+                      <div style={{ fontWeight: 900, color: '#0b2a56' }}>Products</div>
+                      <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>
+                        Create products and upload images.
+                      </div>
+                      <Link
+                        className="btn btn-sm mt-3"
+                        href="/admin/products"
+                        style={{ backgroundColor: '#1bb8aa', borderColor: '#1bb8aa', color: '#ffffff' }}
+                      >
+                        Manage products
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6 col-lg-4">
+                  <div
+                    className="card h-100 border-0 shadow-sm"
+                    style={{
+                      borderRadius: 10,
+                      borderTop: '3px solid #1bb8aa',
+                    }}
+                  >
+                    <div className="card-body">
+                      <div style={{ fontWeight: 900, color: '#0b2a56' }}>Featured</div>
+                      <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>
+                        Pick featured products for the landing page.
+                      </div>
+                      <Link
+                        className="btn btn-sm mt-3"
+                        href="/admin/featured"
+                        style={{ backgroundColor: '#1bb8aa', borderColor: '#1bb8aa', color: '#ffffff' }}
+                      >
+                        Manage featured
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6 col-lg-4">
+                  <div
+                    className="card h-100 border-0 shadow-sm"
+                    style={{
+                      borderRadius: 10,
+                      borderTop: '3px solid #1bb8aa',
+                    }}
+                  >
+                    <div className="card-body">
+                      <div style={{ fontWeight: 900, color: '#0b2a56' }}>Orders</div>
+                      <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>
+                        View and manage customer orders.
+                      </div>
+                      <Link
+                        className="btn btn-sm mt-3"
+                        href="/admin/orders"
+                        style={{ backgroundColor: '#1bb8aa', borderColor: '#1bb8aa', color: '#ffffff' }}
+                      >
+                        View orders
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-12 col-md-6 col-lg-4">
+                  <div
+                    className="card h-100 border-0 shadow-sm"
+                    style={{
+                      borderRadius: 10,
+                      borderTop: '3px solid #1bb8aa',
+                    }}
+                  >
+                    <div className="card-body">
+                      <div style={{ fontWeight: 900, color: '#0b2a56' }}>Navbar Image Categories</div>
+                      <div style={{ color: '#6c757d', fontSize: 13, marginTop: 4 }}>
+                        Configure right-side image tiles for main navbar categories.
+                      </div>
+                      <Link
+                        className="btn btn-sm mt-3"
+                        href="/admin/navbar-image-categories"
+                        style={{ backgroundColor: '#1bb8aa', borderColor: '#1bb8aa', color: '#ffffff' }}
+                      >
+                        Manage image tiles
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

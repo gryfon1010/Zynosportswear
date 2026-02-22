@@ -117,13 +117,16 @@ export default function AdminFeaturedPage() {
 
   return (
     <div>
-      <div className="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+      <div
+        className="d-flex align-items-start justify-content-between gap-3 flex-wrap"
+        style={{ marginTop: 6 }}
+      >
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 6 }}>Featured Products</h1>
           <div style={{ color: '#6c757d' }}>Choose which products appear on the landing page.</div>
         </div>
         <div className="d-flex gap-2">
-          <Link className="btn btn-outline-secondary" href="/admin">
+          <Link className="btn btn-outline-secondary admin-outline-btn" href="/admin">
             Back
           </Link>
           <button className="btn btn-primary" onClick={onSave} disabled={saving}>

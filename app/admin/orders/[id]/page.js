@@ -11,6 +11,11 @@ export default function AdminOrderDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [order, setOrder] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+
+  const [paymentStatusDraft, setPaymentStatusDraft] = useState('');
+  const [fulfillmentStatusDraft, setFulfillmentStatusDraft] = useState('');
 
   const id = params?.id;
 
@@ -41,7 +46,12 @@ export default function AdminOrderDetailPage({ params }) {
         }
 
         const data = await authedJson(`/api/admin/orders/${id}`);
-        setOrder(data?.item || null);
+        const nextOrder = data?.item || null;
+        setOrder(nextOrder);
+        if (nextOrder) {
+          setPaymentStatusDraft(nextOrder?.payment?.status || 'pending');
+          setFulfillmentStatusDraft(nextOrder?.fulfillment?.status || 'unfulfilled');
+        }
         setLoading(false);
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Failed');
@@ -53,6 +63,43 @@ export default function AdminOrderDetailPage({ params }) {
   }, [id]);
 
   const created = order?.createdAt && typeof order.createdAt === 'string' ? new Date(order.createdAt) : null;
+
+  async function onSaveStatus() {
+    if (!order) return;
+    setSaveError(null);
+    setSaving(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not signed in');
+      const token = await user.getIdToken();
+
+      const res = await fetch(`/api/admin/orders/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          paymentStatus: paymentStatusDraft,
+          fulfillmentStatus: fulfillmentStatusDraft,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || `Failed (${res.status})`);
+
+      const updated = data?.item || null;
+      if (updated) {
+        setOrder(updated);
+        setPaymentStatusDraft(updated?.payment?.status || paymentStatusDraft);
+        setFulfillmentStatusDraft(updated?.fulfillment?.status || fulfillmentStatusDraft);
+      }
+      setSaving(false);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Failed to update order');
+      setSaving(false);
+    }
+  }
 
   if (loading) return <div>Loading…</div>;
 
@@ -83,13 +130,16 @@ export default function AdminOrderDetailPage({ params }) {
 
   return (
     <div className="container py-4" style={{ maxWidth: 980 }}>
-      <div className="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+      <div
+        className="d-flex align-items-start justify-content-between gap-3 flex-wrap"
+        style={{ marginTop: 6 }}
+      >
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 900, marginBottom: 6 }}>Order #{id}</h1>
           <div style={{ color: '#6c757d' }}>{order?.email || '—'}</div>
           <div style={{ color: '#6c757d', fontSize: 13 }}>{created ? created.toLocaleString() : ''}</div>
         </div>
-        <Link className="btn btn-outline-secondary" href="/admin/orders">
+        <Link className="btn btn-outline-secondary admin-outline-btn" href="/admin/orders">
           Back
         </Link>
       </div>
@@ -135,14 +185,50 @@ export default function AdminOrderDetailPage({ params }) {
             <div className="card">
               <div className="card-body">
                 <div style={{ fontWeight: 800, marginBottom: 10 }}>Status</div>
-                <div>
-                  <div className="small text-muted">Payment</div>
-                  <div style={{ textTransform: 'capitalize' }}>{order?.payment?.status || '—'}</div>
+
+                <div className="mb-2">
+                  <div className="small text-muted mb-1">Payment status</div>
+                  <select
+                    className="form-select form-select-sm"
+                    value={paymentStatusDraft}
+                    onChange={(e) => setPaymentStatusDraft(e.target.value)}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="failed">Failed</option>
+                    <option value="refunded">Refunded</option>
+                  </select>
                 </div>
-                <div style={{ marginTop: 10 }}>
-                  <div className="small text-muted">Fulfillment</div>
-                  <div style={{ textTransform: 'capitalize' }}>{order?.fulfillment?.status || '—'}</div>
+
+                <div className="mb-3">
+                  <div className="small text-muted mb-1">Fulfillment status</div>
+                  <select
+                    className="form-select form-select-sm"
+                    value={fulfillmentStatusDraft}
+                    onChange={(e) => setFulfillmentStatusDraft(e.target.value)}
+                  >
+                    <option value="unfulfilled">Unfulfilled</option>
+                    <option value="processing">Processing</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="canceled">Canceled</option>
+                  </select>
                 </div>
+
+                <button
+                  type="button"
+                  className="btn btn-sm btn-primary"
+                  onClick={onSaveStatus}
+                  disabled={saving}
+                >
+                  {saving ? 'Saving…' : 'Save status'}
+                </button>
+
+                {saveError ? (
+                  <div className="alert alert-danger mt-2 mb-0" style={{ fontSize: 13 }}>
+                    {saveError}
+                  </div>
+                ) : null}
 
                 <div style={{ fontWeight: 800, margin: '16px 0 8px' }}>Contact</div>
                 <div>{order?.email || '—'}</div>

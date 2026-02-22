@@ -58,6 +58,8 @@ export default async function CategoryPage({ params }) {
             .map((img) => ({
               url: img.url.trim(),
               alt: img && typeof img.alt === 'string' ? img.alt : '',
+              // Keep per-image color so quick view can match images to selected color
+              color: typeof img.color === 'string' ? img.color : '',
             }))
         : [];
 

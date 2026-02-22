@@ -82,6 +82,7 @@ export default function Navbar({ showBlackBar = true } = {}) {
   const [cats, setCats] = useState([]);
   const [user, setUser] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [openMobileCategoryIds, setOpenMobileCategoryIds] = useState(() => new Set());
   const [openMobileGroupIds, setOpenMobileGroupIds] = useState(() => new Set());
@@ -270,6 +271,14 @@ export default function Navbar({ showBlackBar = true } = {}) {
       });
   }
 
+  function handleToggleClick() {
+    setIsMobileNavOpen((prev) => !prev);
+  }
+
+  function handleCloseClick() {
+    setIsMobileNavOpen(false);
+  }
+
   return (
     <header
       ref={headerRef}
@@ -278,10 +287,10 @@ export default function Navbar({ showBlackBar = true } = {}) {
     >
       <div className="container-fluid px-4">
         <div className={styles.row}>
-          <a href="/landingpage" className={styles.brand} aria-label="Zyno Sportswear">
+          <a href="/landingpage" className={styles.brand} aria-label="CGR Sports">
             <img
-              src="/images/zyno-1.png"
-              alt="Zyno Sportswear"
+              src="/images/CGR logo.png"
+              alt="CGR Sports"
               className={styles.brandLogo}
             />
           </a>
@@ -293,24 +302,28 @@ export default function Navbar({ showBlackBar = true } = {}) {
               data-bs-toggle="collapse"
               data-bs-target="#mainNavbar"
               aria-controls="mainNavbar"
-              aria-expanded="false"
+              aria-expanded={isMobileNavOpen ? 'true' : 'false'}
               aria-label="Toggle navigation"
+              onClick={handleToggleClick}
             >
               <span className="navbar-toggler-icon"></span>
             </button>
 
+            {isMobile && isMobileNavOpen ? (
+              <button
+                type="button"
+                className={styles.mobileCloseButton}
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-label="Close navigation"
+                onClick={handleCloseClick}
+                style={{ marginLeft: 8 }}
+              >
+                &times;
+              </button>
+            ) : null}
+
             <div className="collapse navbar-collapse position-relative" id="mainNavbar">
-              {isMobile ? (
-                <button
-                  type="button"
-                  className={styles.mobileCloseButton}
-                  data-bs-toggle="collapse"
-                  data-bs-target="#mainNavbar"
-                  aria-label="Close navigation"
-                >
-                  &times;
-                </button>
-              ) : null}
               <ul className={`navbar-nav mx-auto ${styles.navList}`}>
                 <li className="nav-item">
                   <a className={`${styles.navLink} ${isHomeActive ? styles.active : ''}`} href="/landingpage">
@@ -697,7 +710,6 @@ export default function Navbar({ showBlackBar = true } = {}) {
           </nav>
         </div>
       </div>
-
     </header>
   );
 }

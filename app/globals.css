@@ -5,3 +5,16 @@ html, body {
 body {
   margin: 0;
 }
+.admin-logout-btn:hover {
+  background-color: #d10024;
+  border-color: #d10024;
+  color: #ffffff;
+}
+
+/* Ensure admin outline buttons always render full border (top edge included) */
+.admin-outline-btn {
+  border-top-width: 1px !important;
+  border-right-width: 1px !important;
+  border-bottom-width: 1px !important;
+  border-left-width: 1px !important;
+}

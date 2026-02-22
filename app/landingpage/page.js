@@ -44,7 +44,7 @@ export default function LandingPage() {
               <div className={styles.heroTile}>
                 <div className={styles.heroTag}>BOXING</div>
                 <img
-                  src="https://zynosportswear.com/wp-content/uploads/2024/06/btn1-1.jpg"
+                  src="/images/boxing landing page image.jpeg"
                   alt="Boxing"
                   className={styles.heroImg}
                 />
@@ -56,7 +56,7 @@ export default function LandingPage() {
               <div className={styles.heroTile}>
                 <div className={styles.heroTag}>MMA</div>
                 <img
-                  src="https://zynosportswear.com/wp-content/uploads/2024/06/btn2.jpg"
+                  src="/images/MMA landing page image.jpeg"
                   alt="MMA"
                   className={styles.heroImg}
                 />
@@ -68,7 +68,7 @@ export default function LandingPage() {
               <div className={styles.heroTile}>
                 <div className={styles.heroTag}>FITNESS</div>
                 <img
-                  src="https://zynosportswear.com/wp-content/uploads/2024/06/btn4.jpg"
+                  src="/images/Fitness landingpage image.jpeg"
                   alt="Fitness"
                   className={styles.heroImg}
                 />
@@ -80,7 +80,7 @@ export default function LandingPage() {
               <div className={styles.heroTile}>
                 <div className={styles.heroTag}>APPAREL</div>
                 <img
-                  src="https://zynosportswear.com/wp-content/uploads/2024/06/btn3.jpg"
+                  src="/images/Apparel landing page image.jpeg"
                   alt="Apparel"
                   className={styles.heroImg}
                 />
@@ -114,49 +114,58 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section
-        className={styles.aboutSection}
-        style={{
-          backgroundImage:
-            'url(https://zynosportswear.com/wp-content/uploads/2024/05/mid-ban.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
+      <section className={styles.aboutSection}>
         <div className="container">
           <div className={`row align-items-stretch ${styles.aboutInner}`}>
-            <div
-              className="col-12 col-lg-6 d-flex align-items-center justify-content-center"
-              style={{ borderRight: '2px solid #fff' }}
-            >
+            <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center">
               <img
-                src="https://zynosportswear.com/wp-content/uploads/2024/08/vecteezy_basketball-player-dribbling-ball-in-green-uniform-on_46572102-768x960.png"
-                alt="Basketball player"
+                src="/images/Welcome Landing page image .jpeg"
+                alt="Welcome to Zyno Sportswear"
                 className={styles.aboutImg}
               />
             </div>
             <div className="col-12 col-lg-6 py-4 py-lg-0 d-flex align-items-center">
               <div className="px-lg-3">
-                <div className={styles.aboutHeading}>Welcome to Zyno Sportswear</div>
+                <div className={styles.aboutHeading}>About CGR Sports</div>
                 <p className={styles.aboutCopy}>
-                  At Zyno Sportswear, we are passionate about crafting high-quality, custom teamwear and sportswear that not only meets but exceeds the expectations of athletes and teams worldwide. With a commitment to excellence and innovation, we provide a comprehensive range of products designed to enhance performance, comfort, and style.
+                  CGR Sports is a performance-driven combat sports brand that specializes in premium-quality, fully
+                  customized combat sports gear. We serve businesses, academies, gyms, teams, and individual athletes
+                  across boxing, martial arts, karate, jiu-jitsu, and related disciplines.
                 </p>
+
+                <div className={styles.aboutHeading}>Our Mission</div>
+                <ul className={styles.aboutCopy}>
+                  <li>To provide gear that reflects each client&apos;s identity, standards, and performance needs.</li>
+                  <li>To focus on precision craftsmanship from concept to final product.</li>
+                  <li>To use durable materials and tailored designs for long-lasting performance.</li>
+                </ul>
+
                 <div className={styles.aboutHeading}>What We Offer</div>
+                <ul className={styles.aboutCopy}>
+                  <li>Fully customized combat sports equipment and apparel.</li>
+                  <li>Design solutions aligned with each customer&apos;s vision and brand requirements.</li>
+                  <li>Scalable production for growing gyms, established brands, and large organizations.</li>
+                  <li>Consistent quality without compromise.</li>
+                </ul>
+
+                <div className={styles.aboutHeading}>What Sets CGR Sports Apart</div>
+                <ul className={styles.aboutCopy}>
+                  <li>Strong commitment to customization.</li>
+                  <li>High standards of reliability and consistency.</li>
+                  <li>Focus on long-term partnerships with clients.</li>
+                  <li>Deep understanding of the real demands of combat sports.</li>
+                </ul>
+
+                <div className={styles.aboutHeading}>Our Approach</div>
+                <ul className={styles.aboutCopy}>
+                  <li>Close collaboration with clients at every stage.</li>
+                  <li>Products that combine functionality, comfort, and style.</li>
+                  <li>More than manufacturing — we help build brands and elevate performance.</li>
+                </ul>
+
+                <div className={styles.aboutHeading}>Our Vision</div>
                 <p className={styles.aboutCopy}>
-                  <strong style={{ color: '#1bb8aa' }}>Custom Teamwear:</strong> Like Baseball, Basketball, Football, Soccer, Hockey, Volleyball uniform and Sublimated Garments, we offer fully customizable team uniforms that reflect your team’s identity.
-                </p>
-                <p className={styles.aboutCopy}>
-                  <strong style={{ color: '#1bb8aa' }}>Customization:</strong> Our state-of-the-art customization options allow you to create apparel that truly represents your team.
-                </p>
-                <p className={styles.aboutCopy}>
-                  <strong style={{ color: '#1bb8aa' }}>Innovation:</strong> We stay ahead of the curve by incorporating the latest technology and design trends into our products.
-                </p>
-                <p className={styles.aboutCopy}>
-                  <strong style={{ color: '#1bb8aa' }}>Customer Service:</strong> Our dedicated team is here to support you every step of the way, from design to delivery.
-                </p>
-                <div className={styles.aboutHeading}>Join us</div>
-                <p className={styles.aboutCopy}>
-                  Whether you’re a professional team, a school, or a local club, zyno sportswear is your trusted partner for all your teamwear and sportswear needs. Let’s work together to create apparel that inspires and performs.
+                  To support fighters and organizations shaping the future of combat sports.
                 </p>
               </div>
             </div>
@@ -166,11 +175,12 @@ export default function LandingPage() {
 
       <section className={styles.brandBanner}>
         <div className="container">
-          <h2 className={styles.brandBannerTitle}>ZYNO SPORTSWEAR</h2>
+          <h2 className={styles.brandBannerTitle}>COUGAR SPORTS</h2>
           <div className={styles.brandBannerSub}>WORKING WITH INTERNATIONAL BRANDS</div>
         </div>
       </section>
 
+      {/*
       <section className={styles.followSection}>
         <div className="container">
           <div className={styles.sectionTitle}>
@@ -249,6 +259,7 @@ export default function LandingPage() {
           <Script src="//widget.tagembed.com/embed.min.js" strategy="afterInteractive" />
         </div>
       </section>
+      */}
 
       <FloatingActions />
     </main>

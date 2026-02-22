@@ -617,12 +617,15 @@ export default function AdminProductsPage() {
 
   return (
     <div>
-      <div className="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+      <div
+        className="d-flex align-items-start justify-content-between gap-3 flex-wrap"
+        style={{ marginTop: 6 }}
+      >
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 6 }}>Products</h1>
           <div style={{ color: '#6c757d', fontSize: 13 }}>Create products (Cloudinary upload comes next).</div>
         </div>
-        <Link className="btn btn-outline-secondary" href="/admin">
+        <Link className="btn btn-outline-secondary admin-outline-btn" href="/admin">
           Back
         </Link>
       </div>

@@ -30,52 +30,37 @@ export default function AboutUsPage() {
           <div className="row justify-content-center">
             <div className="col-12 col-lg-10">
               <hr className={styles.divider} />
-              <h2 className={styles.heading}>ZYNO SPORTSWEAR</h2>
+              <h2 className={styles.heading}>About COUGAR Sports</h2>
 
               <p className={styles.copy}>
-                Established in 2018, ZYNO SPORTSWEAR is a premier provider of sportswear, teamwear, outerwear,
-                sublimated garments, and accessories. Our forte lies in crafting bespoke sports attire tailored
-                precisely to your needs. Leveraging state-of-the-art printing techniques, we deliver sports
-                apparel of exceptional quality, adorned with vivid and intricate prints that endure the test of
-                time.
+                COUGAR Sports is a performance-driven sports brand dedicated to delivering premium-quality, fully
+                customized combat sports gear. We specialize in serving businesses, academies, gyms, teams, and
+                individual athletes across boxing, martial arts, karate, jiu-jitsu, and related disciplines.
               </p>
 
               <p className={styles.copy}>
-                At ZYNO SPORTSWEAR, our dedicated in-house design team consistently produces remarkable designs
-                for individuals, teams, and clubs. For any design inquiries, feel free to contact us at{' '}
-                <a
-                  href="mailto:info@zynosportswear.com"
-                  className={styles.emailLink}
-                >
-                  info@zynosportswear.com
-                </a>
-                . We assure you a response within 24 hours, along with a competitive price quote for a distinctive
-                design your team will proudly sport.
+                Our mission is simple: to empower our clients with gear that reflects their identity, standards,
+                and performance needs. From concept to final product, we focus on precision craftsmanship, durable
+                materials, and tailored designs that align with each customer&apos;s vision. Whether you are a growing
+                gym, an established brand, or a large organization, COUGAR Sports provides scalable solutions without
+                compromising on quality.
               </p>
 
               <p className={styles.copy}>
-                Our website serves as a platform showcasing the limitless creativity and skill of our designers.
-                Our goal is to offer customers unique apparel options at competitive prices. Outfit your team with
-                customized uniforms and accessories reflecting the latest trends. Our personalized jerseys ensure
-                that players, coaches, and fans exude their best appearance at every game.
+                What sets COUGAR Sports apart is our commitment to customization, reliability, and long-term
+                partnerships. We understand the demands of combat sports and work closely with our clients to
+                deliver products that combine functionality, comfort, and style.
               </p>
 
               <p className={styles.copy}>
-                To uphold superior quality and consistency, we procure premium performance fabrics from renowned
-                textile mills. Each garment undergoes meticulous manufacturing under stringent quality control
-                standards, ensuring unparalleled craftsmanship.
-              </p>
-
-              <p className={styles.copy}>
-                For any assistance with your order, don&apos;t hesitate to reach out to us via email or through the
-                Contact Page on our website. Our staff is dedicated to providing prompt and friendly support, solely
-                focused on ensuring your complete satisfaction with every order.
+                At COUGAR Sports, we don&apos;t just manufacture sports equipment — we help build brands, elevate
+                performance, and support the fighters and businesses shaping the future of combat sports.
               </p>
 
               <div className={styles.logoWrap}>
                 <img
-                  src="/images/zyno-1.png"
-                  alt="Zyno Sportswear"
+                  src="/images/CGR logo.png"
+                  alt="COUGAR Sports"
                   className={styles.logoImg}
                 />
               </div>

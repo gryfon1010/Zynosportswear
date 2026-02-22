@@ -15,10 +15,22 @@ function readCart() {
   }
 }
 
+function writeCart(items) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(CART_KEY, JSON.stringify(items));
+  } catch {
+    // ignore
+  }
+}
+
 export default function CheckoutPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [unavailable, setUnavailable] = useState({ productIds: [], names: [] });
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
 
   const [customer, setCustomer] = useState({
     email: '',
@@ -64,13 +76,39 @@ export default function CheckoutPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Failed to start checkout');
+      if (!res.ok) {
+        const ids = Array.isArray(data?.unavailableProductIds) ? data.unavailableProductIds : [];
+        const names = Array.isArray(data?.unavailableProductNames) ? data.unavailableProductNames : [];
+        if (ids.length) {
+          setUnavailable({ productIds: ids.map(String), names });
+          setShowUnavailableModal(true);
+          setError(null);
+          setLoading(false);
+          return;
+        }
+        throw new Error(data?.error || 'Failed to start checkout');
+      }
 
       window.location.href = data.url;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Checkout failed');
       setLoading(false);
     }
+  }
+
+  function removeUnavailableFromCart() {
+    if (!unavailable.productIds.length) {
+      setShowUnavailableModal(false);
+      return;
+    }
+    setItems((prev) => {
+      const ids = new Set(unavailable.productIds.map(String));
+      const next = prev.filter((it) => !ids.has(String(it.productId || '')));
+      writeCart(next);
+      return next;
+    });
+    setShowUnavailableModal(false);
+    setError('We removed items from your cart that are no longer available. Please review your order and try again.');
   }
 
   return (
@@ -196,7 +234,16 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {error ? <div className="alert alert-danger mb-0">{error}</div> : null}
+              {error ? (
+                <div className="alert alert-danger mb-3">
+                  {error}
+                  <div className="mt-2">
+                    <a href="/cart" className="btn btn-sm btn-outline-secondary">
+                      Go to cart
+                    </a>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -253,6 +300,52 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+      {showUnavailableModal ? (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 1050,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div className="card" style={{ maxWidth: 480, width: '90%' }}>
+            <div className="card-body">
+              <h5 className="card-title" style={{ fontWeight: 800 }}>Some items are no longer available</h5>
+              <p className="card-text" style={{ fontSize: 14 }}>
+                One or more products in your cart were removed from the store. We recommend removing them
+                before you continue to checkout.
+              </p>
+              {unavailable.names && unavailable.names.length ? (
+                <ul className="mb-3" style={{ fontSize: 13 }}>
+                  {unavailable.names.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
+              ) : null}
+              <div className="d-flex justify-content-end gap-2 mt-2">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={() => setShowUnavailableModal(false)}
+                >
+                  Keep items
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-danger"
+                  onClick={removeUnavailableFromCart}
+                >
+                  Remove unavailable items
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

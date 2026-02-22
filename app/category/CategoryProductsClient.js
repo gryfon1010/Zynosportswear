@@ -185,6 +185,28 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
     return () => mql.removeListener(handleViewportChange);
   }, []);
 
+  // Normalize color strings for matching image.color
+  function normalizeColor(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  // In quick view, prefer images that match the selected color, otherwise fall back.
+  const quickViewImages = useMemo(() => {
+    if (!quickViewProduct || !Array.isArray(quickViewProduct.images)) return [];
+    const all = quickViewProduct.images;
+    if (quickViewColor) {
+      const norm = normalizeColor(quickViewColor);
+      const byColor = all.filter((img) => normalizeColor(img.color) === norm);
+      if (byColor.length) return byColor.slice(0, 5);
+    }
+    return all.slice(0, 5);
+  }, [quickViewProduct, quickViewColor]);
+
+  // Whenever the selected quick view color changes, reset to the first image
+  useEffect(() => {
+    setQuickViewImageIndex(0);
+  }, [quickViewColor]);
+
   useEffect(() => {
     // Load wishlist from localStorage on mount
     setWishlist(readWishlist());
@@ -238,33 +260,70 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
     setOpenSections((prev) => ({ ...prev, [name]: !prev[name] }));
   }
 
-  function renderColorDot(name) {
-    const key = String(name || '').trim().toLowerCase();
-    let color = '#868e96';
-    if (key === 'black') color = '#000000';
-    else if (key === 'white') color = '#ffffff';
-    else if (key === 'red') color = '#e03131';
-    else if (key === 'blue') color = '#1971c2';
-    else if (key === 'green') color = '#2f9e44';
-    else if (key === 'yellow' || key === 'gold' || key === 'golden') color = '#f08c00';
-    else if (key === 'orange') color = '#f76707';
-    else if (key === 'purple') color = '#7048e8';
+  function resolveNamedColor(fragment) {
+    const v = String(fragment || '').trim().toLowerCase();
+    if (!v) return '#868e96';
+    if (v.includes('white')) return '#ffffff';
+    if (v.includes('grey') || v.includes('gray')) return '#868e96';
 
-    const border = key === 'white' ? '1px solid #adb5bd' : 'none';
+    // Rich reds
+    if (v.includes('maroon') || v.includes('burgundy')) return '#800000';
+    if (v.includes('red')) return '#e03131';
+
+    // Blues
+    if (v.includes('navy')) return '#001f3f';
+    if (v.includes('sky') || v.includes('light blue')) return '#4dabf7';
+    if (v.includes('blue')) return '#1971c2';
+
+    // Greens
+    if (v.includes('olive')) return '#556b2f';
+    if (v.includes('green')) return '#2f9e44';
+
+    // Warm colors
+    if (v.includes('yellow') || v.includes('gold') || v.includes('golden')) return '#f08c00';
+    if (v.includes('orange')) return '#f76707';
+
+    // Pinks / purples
+    if (v.includes('pink') || v.includes('fuchsia') || v.includes('magenta')) return '#e64980';
+    if (v.includes('purple')) return '#7048e8';
+
+    if (v.includes('black')) return '#000000';
+    return '#868e96';
+  }
+
+  function renderColorDot(name) {
+    const raw = String(name || '').trim();
+    const lower = raw.toLowerCase();
+    const parts = lower.split('/').map((p) => p.trim()).filter(Boolean);
+    const first = parts[0] || lower;
+    const second = parts[1] || null;
+
+    const c1 = resolveNamedColor(first);
+    const c2 = second ? resolveNamedColor(second) : null;
+
+    const hasWhite = c1 === '#ffffff' || c2 === '#ffffff';
+    const border = hasWhite ? '1px solid #adb5bd' : 'none';
+
+    const style = {
+      display: 'inline-block',
+      width: 14,
+      height: 14,
+      borderRadius: '50%',
+      border,
+      marginRight: 4,
+    };
+
+    if (c2) {
+      style.backgroundImage = `linear-gradient(to right, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
+    } else {
+      style.backgroundColor = c1;
+    }
 
     return (
       <span
         key={name}
         title={name}
-        style={{
-          display: 'inline-block',
-          width: 14,
-          height: 14,
-          borderRadius: '50%',
-          backgroundColor: color,
-          border,
-          marginRight: 4,
-        }}
+        style={style}
       />
     );
   }
@@ -428,7 +487,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                 className="btn btn-link p-0 w-100 d-flex justify-content-between align-items-center text-decoration-none text-dark"
                 onClick={() => toggleSection('color')}
               >
-                <span className="small fw-semibold text-uppercase">Color</span>
+                <div className="small fw-semibold text-uppercase">Color</div>
                 <span className="small">{openSections.color ? '−' : '+'}</span>
               </button>
               {openSections.color ? (
@@ -437,17 +496,30 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                     const key = String(name || '').trim();
                     const active = filters.colors.has(key);
                     const lower = key.toLowerCase();
-                    let bg = '#f1f3f5';
-                    if (lower === 'black') bg = '#000000';
-                    else if (lower === 'white') bg = '#ffffff';
-                    else if (lower === 'red') bg = '#e03131';
-                    else if (lower === 'blue') bg = '#1971c2';
-                    else if (lower === 'green') bg = '#2f9e44';
-                    else if (lower === 'yellow' || lower === 'gold' || lower === 'golden') bg = '#f08c00';
-                    else if (lower === 'orange') bg = '#f76707';
-                    else if (lower === 'purple') bg = '#7048e8';
+                    const parts = lower.split('/').map((p) => p.trim()).filter(Boolean);
+                    const first = parts[0] || lower;
+                    const second = parts[1] || null;
 
-                    const border = lower === 'white' ? '1px solid #adb5bd' : '1px solid #dee2e6';
+                    const c1 = resolveNamedColor(first);
+                    const c2 = second ? resolveNamedColor(second) : null;
+
+                    const hasWhite = c1 === '#ffffff' || c2 === '#ffffff';
+                    const border = hasWhite ? '1px solid #adb5bd' : '1px solid #dee2e6';
+
+                    const style = {
+                      width: 24,
+                      height: 24,
+                      borderRadius: 2,
+                      padding: 0,
+                      border,
+                      outline: active ? '2px solid #212529' : 'none',
+                    };
+
+                    if (c2) {
+                      style.backgroundImage = `linear-gradient(to right, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
+                    } else {
+                      style.backgroundColor = c1;
+                    }
 
                     return (
                       <button
@@ -455,15 +527,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                         type="button"
                         title={key}
                         onClick={() => toggleFilter('colors', key)}
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 2,
-                          padding: 0,
-                          backgroundColor: bg,
-                          border,
-                          outline: active ? '2px solid #212529' : 'none',
-                        }}
+                        style={style}
                       />
                     );
                   })}
@@ -601,7 +665,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
               return (
                 <div className="col-12 col-sm-6 col-lg-4" key={p.id}>
                   <div
-                    className="card h-100 border-0 shadow-sm position-relative"
+                    className="card h-100 border position-relative"
                     onMouseEnter={() => {
                       if (isMobileViewport) return;
                       setHoveredProductId(p.id);
@@ -634,7 +698,15 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                       <div className="position-relative">
                         <a href={`/product/${p.slug}`}>
                           <div
-                            style={{ position: 'relative', height: 220, overflow: 'hidden' }}
+                            style={{
+                              position: 'relative',
+                              height: 220,
+                              overflow: 'hidden',
+                              backgroundColor: '#ffffff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
                             onMouseMove={(e) => {
                               if (isMobileViewport || !imgs.length) return;
                               const rect = e.currentTarget.getBoundingClientRect();
@@ -663,8 +735,8 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                                 alt={img.alt || p.name}
                                 className="card-img-top"
                                 style={{
-                                  objectFit: 'cover',
-                                  height: 220,
+                                  objectFit: 'contain',
+                                  height: '100%',
                                   width: '100%',
                                   position: 'absolute',
                                   top: 0,
@@ -796,11 +868,11 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                 <div
                   className="mb-3"
                   onMouseMove={(e) => {
-                    if (!Array.isArray(quickViewProduct.images) || !quickViewProduct.images.length) return;
+                    if (!Array.isArray(quickViewImages) || !quickViewImages.length) return;
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const ratio = rect.width > 0 ? x / rect.width : 0;
-                    const imgs = quickViewProduct.images.slice(0, 3);
+                    const imgs = quickViewImages.slice(0, 3);
                     let idx = 0;
                     if (imgs.length >= 3) {
                       if (ratio < 1 / 3) idx = 0;
@@ -812,13 +884,13 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                     setQuickViewImageIndex(idx);
                   }}
                 >
-                  {Array.isArray(quickViewProduct.images) && quickViewProduct.images.length ? (
+                  {Array.isArray(quickViewImages) && quickViewImages.length ? (
                     <>
                       <div
                         className="border rounded bg-light position-relative"
                         style={{ height: 260, overflow: 'hidden' }}
                       >
-                        {quickViewProduct.images.slice(0, 3).map((img, idx) => (
+                        {quickViewImages.slice(0, 3).map((img, idx) => (
                           <img
                             key={idx}
                             src={img.url}
@@ -836,9 +908,9 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                           />
                         ))}
                       </div>
-                      {quickViewProduct.images.length > 1 ? (
+                      {quickViewImages.length > 1 ? (
                         <div className="d-flex justify-content-center gap-1 mt-2">
-                          {quickViewProduct.images.slice(0, 3).map((img, idx) => (
+                          {quickViewImages.slice(0, 3).map((img, idx) => (
                             <button
                               key={idx}
                               type="button"
@@ -877,19 +949,49 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                     <div className="d-flex flex-wrap" style={{ gap: 8 }}>
                       {quickViewProduct.colors.map((c) => {
                         const key = String(c || '').trim();
+                        if (!key) return null;
+
                         const active = quickViewColor === key;
                         const lower = key.toLowerCase();
-                        let bg = '#f1f3f5';
-                        if (lower === 'black') bg = '#000000';
-                        else if (lower === 'white') bg = '#ffffff';
-                        else if (lower === 'red') bg = '#e03131';
-                        else if (lower === 'blue') bg = '#1971c2';
-                        else if (lower === 'green') bg = '#2f9e44';
-                        else if (lower === 'yellow' || lower === 'gold' || lower === 'golden') bg = '#f08c00';
-                        else if (lower === 'orange') bg = '#f76707';
-                        else if (lower === 'purple') bg = '#7048e8';
+                        const parts = lower.split('/').map((p) => p.trim()).filter(Boolean);
+                        const first = parts[0] || lower;
+                        const second = parts[1] || null;
 
-                        const border = lower === 'white' ? '1px solid #adb5bd' : '1px solid #dee2e6';
+                        function resolveNamedColor(fragment) {
+                          const v = String(fragment || '').trim().toLowerCase();
+                          if (!v) return '#f8f9fa';
+                          if (v.includes('white')) return '#ffffff';
+                          if (v.includes('grey') || v.includes('gray')) return '#868e96';
+                          if (v.includes('red')) return '#e03131';
+                          if (v.includes('blue')) return '#1971c2';
+                          if (v.includes('green')) return '#2f9e44';
+                          if (v.includes('yellow') || v.includes('gold') || v.includes('golden')) return '#f08c00';
+                          if (v.includes('orange')) return '#f76707';
+                          if (v.includes('purple')) return '#7048e8';
+                          if (v.includes('black')) return '#000000';
+                          return '#f8f9fa';
+                        }
+
+                        const c1 = resolveNamedColor(first);
+                        const c2 = second ? resolveNamedColor(second) : null;
+
+                        const hasWhite = c1 === '#ffffff' || c2 === '#ffffff';
+                        const border = hasWhite ? '1px solid #adb5bd' : '1px solid #dee2e6';
+
+                        const style = {
+                          width: 26,
+                          height: 26,
+                          borderRadius: '50%',
+                          border,
+                          outline: active ? '2px solid #212529' : 'none',
+                          padding: 0,
+                        };
+
+                        if (c2) {
+                          style.backgroundImage = `linear-gradient(to right, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
+                        } else {
+                          style.backgroundColor = c1;
+                        }
 
                         return (
                           <button
@@ -897,15 +999,7 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                             type="button"
                             onClick={() => setQuickViewColor(key)}
                             title={key}
-                            style={{
-                              width: 26,
-                              height: 26,
-                              borderRadius: '50%',
-                              backgroundColor: bg,
-                              border,
-                              outline: active ? '2px solid #212529' : 'none',
-                              padding: 0,
-                            }}
+                            style={style}
                           />
                         );
                       })}
@@ -981,8 +1075,8 @@ export default function CategoryProductsClient({ initialProducts, categoryName }
                         size: quickViewSize || null,
                         unitAmount: Number(quickViewProduct?.pricing?.unitAmount || 0),
                         imageUrl:
-                          Array.isArray(quickViewProduct.images) && quickViewProduct.images.length
-                            ? quickViewProduct.images[0].url
+                          Array.isArray(quickViewImages) && quickViewImages.length
+                            ? quickViewImages[quickViewImageIndex]?.url || quickViewImages[0].url
                             : null,
                       }}
                       qty={quickViewQty}

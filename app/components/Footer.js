@@ -18,23 +18,26 @@ export default function Footer() {
             <a className={styles.footerLink} href="/contact-us/">
               Contact us
             </a>
+            <a className={styles.footerLink} href="/certificates">
+              Authorizations &amp; Certificates
+            </a>
           </div>
           <div className="col-12 col-md-3">
             <div className={styles.footerTitle}>PRODUCTS</div>
-            <a className={styles.footerLink} href="/category/sports-wear">
-              SPORTS WEAR
+            <a className={styles.footerLink} href="/category/boxing">
+              BOXING
             </a>
-            <a className={styles.footerLink} href="/category/outer-wear">
-              OUTER WEAR
+            <a className={styles.footerLink} href="/category/mma">
+              MMA
             </a>
-            <a className={styles.footerLink} href="/category/sublimated-garments">
-              SUBLIMATED GARMENTS
+            <a className={styles.footerLink} href="/category/fitness">
+              FITNESS
             </a>
-            <a className={styles.footerLink} href="/category/fitness-wear">
-              FITNESS WEAR
+            <a className={styles.footerLink} href="/category/yoga">
+              YOGA
             </a>
-            <a className={styles.footerLink} href="/category/accessories">
-              ACCESSORIES
+            <a className={styles.footerLink} href="/category/apparel">
+              APPAREL
             </a>
           </div>
           <div className="col-12 col-md-3">
@@ -76,12 +79,12 @@ export default function Footer() {
         />
         <div className="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
           <div className={styles.footerSmall}>
-            © 2024 - 25 ZYNO SPORTSWEAR | All Rights Reserved
+            © 2024 - 25 COUGAR SPORTS | All Rights Reserved
           </div>
           <img
-            src="/images/Navbar%20logo.png"
-            alt="Zyno Sportswear"
-            style={{ width: 90, height: 'auto', opacity: 0.9 }}
+            src="/images/CGR logo.png"
+            alt="CGR Sports"
+            style={{ width: 140, height: 'auto', opacity: 0.9 }}
           />
         </div>
       </div>

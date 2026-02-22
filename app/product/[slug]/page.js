@@ -25,6 +25,7 @@ export default async function ProductPage({ params }) {
         .map((img) => ({
           url: img.url.trim(),
           alt: img && typeof img.alt === 'string' ? img.alt : '',
+          color: typeof img.color === 'string' ? img.color : '',
         }))
     : [];
 

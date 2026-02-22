@@ -15,13 +15,14 @@
 }
 
 .heroTitle {
-  margin: 0;
+  margin: 20px 0 0 0;
   font-size: 26px;
   font-weight: 700;
 }
 
 .breadcrumb {
   font-size: 12px;
+  margin-top: 20px;
 }
 
 .breadcrumb a {

@@ -1,8 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AddToCartButton from "./AddToCartButton";
 import { readWishlist, writeWishlist } from "../../lib/wishlist";
+
+const CART_KEY = 'zyno_cart_v1';
+
+function readCartSafe() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(CART_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCartSafe(items) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(CART_KEY, JSON.stringify(items));
+  } catch {
+    // ignore storage errors
+  }
+}
 
 export default function ProductDetailClient({ product }) {
   const [isMobileViewport, setIsMobileViewport] = useState(false);
@@ -11,8 +33,10 @@ export default function ProductDetailClient({ product }) {
   const [qty, setQty] = useState(1);
   const [inWishlist, setInWishlist] = useState(false);
   const [showDescription, setShowDescription] = useState(true);
-  const [zoomImage, setZoomImage] = useState(null);
+  const [zoomImageIndex, setZoomImageIndex] = useState(null);
   const allImages = Array.isArray(product?.images) ? product.images : [];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const sliderRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -64,6 +88,48 @@ export default function ProductDetailClient({ product }) {
     }
     return allImages.slice(0, 5);
   }, [allImages, selectedColor]);
+
+  // Keep current index in range when images change
+  useEffect(() => {
+    if (!images.length) {
+      setCurrentImageIndex(0);
+      setZoomImageIndex(null);
+      return;
+    }
+    setCurrentImageIndex((prev) => {
+      if (prev < 0) return 0;
+      if (prev >= images.length) return images.length - 1;
+      return prev;
+    });
+  }, [images.length]);
+
+  // Scroll the mobile slider to the active image when index or viewport changes
+  useEffect(() => {
+    if (!isMobileViewport) return;
+    const container = sliderRef.current;
+    if (!container || !container.children || !container.children.length) return;
+    const child = container.children[currentImageIndex];
+    if (!child || typeof child.scrollIntoView !== 'function') return;
+    try {
+      child.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    } catch {
+      // ignore scroll errors
+    }
+  }, [currentImageIndex, isMobileViewport]);
+
+  // Close zoomed image on Escape key (both mobile and desktop)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        setZoomImageIndex(null);
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const priceInfo = useMemo(() => {
     const unitAmount = Number(product?.pricing?.unitAmount || 0);
@@ -122,6 +188,40 @@ export default function ProductDetailClient({ product }) {
     writeWishlist(next);
   };
 
+  const handleBuyNow = () => {
+    const unitAmount = Number(product?.pricing?.unitAmount || 0);
+    if (!Number.isFinite(unitAmount) || unitAmount <= 0) {
+      // If price is not valid, still go to checkout but it will show $0
+      window.location.href = '/checkout';
+      return;
+    }
+
+    const currentCart = readCartSafe();
+    const quantity = Number.isFinite(Number(qty)) && Number(qty) > 0 ? Number(qty) : 1;
+    const imageUrl = image ? image.url : null;
+
+    const baseName =
+      (product?.name || 'Item') +
+      (selectedColor ? ` - ${selectedColor}` : '') +
+      (selectedSize ? ` / ${selectedSize}` : '');
+
+    const newItem = {
+      productId: product.id,
+      sku: product?.sku || null,
+      name: baseName,
+      qty: quantity,
+      unitAmount,
+      imageUrl,
+      color: selectedColor || null,
+      size: selectedSize || null,
+    };
+
+    const nextCart = [...currentCart, newItem];
+    writeCartSafe(nextCart);
+
+    window.location.href = '/checkout';
+  };
+
   return (
     <div className="container py-4">
       <div className="mb-3 small">
@@ -135,89 +235,248 @@ export default function ProductDetailClient({ product }) {
       <div className="row g-4">
         <div className="col-12 col-lg-6">
           {image ? (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                gridAutoRows: 'minmax(0, 1fr)',
-                gap: 12,
-              }}
-            >
-              {images.slice(0, 4).map((img, idx) => (
+            isMobileViewport ? (
+              // Mobile: horizontal swipeable slider (one image per view)
+              <div>
                 <div
-                  key={idx}
-                  className="border rounded bg-light position-relative"
+                  ref={sliderRef}
                   style={{
-                    minHeight: 180,
-                    overflow: 'hidden',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    overflowX: 'auto',
+                    scrollSnapType: 'x mandatory',
+                    WebkitOverflowScrolling: 'touch',
+                    gap: 8,
+                    paddingBottom: 6,
                   }}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setZoomImage(img)}
-                    style={{
-                      border: 'none',
-                      padding: 0,
-                      margin: 0,
-                      backgroundColor: 'transparent',
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <img
-                      src={img.url}
-                      alt={img.alt || product.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                  </button>
-
-                  {/* Individual zoom icon per image */}
-                  <button
-                    type="button"
-                    onClick={() => setZoomImage(img)}
-                    style={{
-                      position: 'absolute',
-                      right: 8,
-                      top: 8,
-                      width: 32,
-                      height: 32,
-                      borderRadius: '50%',
-                      border: 'none',
-                      backgroundColor: 'rgba(255,255,255,0.95)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                      cursor: 'pointer',
-                    }}
-                    aria-label="View image fullscreen"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#000"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  {images.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="border rounded bg-light position-relative"
+                      style={{
+                        flex: '0 0 100%',
+                        scrollSnapAlign: 'center',
+                        minHeight: 320,
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      <polyline points="15 3 21 3 21 9" />
-                      <line x1="21" y1="3" x2="14" y2="10" />
-                      <polyline points="9 21 3 21 3 15" />
-                      <line x1="3" y1="21" x2="10" y2="14" />
-                    </svg>
-                  </button>
+                      <button
+                        type="button"
+                        onClick={() => setZoomImageIndex(idx)}
+                        style={{
+                          border: 'none',
+                          padding: 0,
+                          margin: 0,
+                          backgroundColor: 'transparent',
+                          width: '100%',
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <img
+                          src={img.url}
+                          alt={img.alt || product.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setZoomImageIndex(idx)}
+                        style={{
+                          position: 'absolute',
+                          right: 8,
+                          top: 8,
+                          width: 32,
+                          height: 32,
+                          borderRadius: '50%',
+                          border: 'none',
+                          backgroundColor: 'rgba(255,255,255,0.95)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                          cursor: 'pointer',
+                        }}
+                        aria-label="View image fullscreen"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#000"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="21" y1="3" x2="14" y2="10" />
+                          <polyline points="9 21 3 21 3 15" />
+                          <line x1="3" y1="21" x2="10" y2="14" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+
+                {images.length > 1 ? (
+                  <div
+                    style={{
+                      marginTop: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prev))}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'rgba(0,0,0,0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: currentImageIndex === 0 ? 0.4 : 1,
+                        pointerEvents: currentImageIndex === 0 ? 'none' : 'auto',
+                      }}
+                      aria-label="Previous image"
+                    >
+                      <span style={{ fontSize: 18, lineHeight: 1 }}>‹</span>
+                    </button>
+
+                    <div
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        padding: '4px 10px',
+                        borderRadius: 999,
+                        backgroundColor: 'rgba(0,0,0,0.06)',
+                      }}
+                    >
+                      {currentImageIndex + 1} / {images.length}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCurrentImageIndex((prev) => (prev < images.length - 1 ? prev + 1 : prev))
+                      }
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'rgba(0,0,0,0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: currentImageIndex === images.length - 1 ? 0.4 : 1,
+                        pointerEvents: currentImageIndex === images.length - 1 ? 'none' : 'auto',
+                      }}
+                      aria-label="Next image"
+                    >
+                      <span style={{ fontSize: 18, lineHeight: 1 }}>›</span>
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              // Desktop / large view: existing 2x2 grid
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                  gridAutoRows: 'minmax(0, 1fr)',
+                  gap: 12,
+                }}
+              >
+                {images.slice(0, 4).map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="border rounded bg-light position-relative"
+                    style={{
+                      minHeight: 180,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setZoomImageIndex(idx)}
+                      style={{
+                        border: 'none',
+                        padding: 0,
+                        margin: 0,
+                        backgroundColor: 'transparent',
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <img
+                        src={img.url}
+                        alt={img.alt || product.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </button>
+
+                    {/* Individual zoom icon per image */}
+                    <button
+                      type="button"
+                      onClick={() => setZoomImageIndex(idx)}
+                      style={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'rgba(255,255,255,0.95)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                        cursor: 'pointer',
+                      }}
+                      aria-label="View image fullscreen"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#000"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="21" y1="3" x2="14" y2="10" />
+                        <polyline points="9 21 3 21 3 15" />
+                        <line x1="3" y1="21" x2="10" y2="14" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )
           ) : (
             <div className="border rounded bg-light d-flex align-items-center justify-content-center" style={{ minHeight: 420 }}>
               <div className="text-muted">No image</div>
@@ -258,18 +517,61 @@ export default function ProductDetailClient({ product }) {
                   const active = selectedColor === key;
 
                   const lower = key.toLowerCase();
-                  let bg = '#f8f9fa';
-                  if (lower === 'white') bg = '#ffffff';
-                  else if (lower === 'black') bg = '#000000';
-                  else if (lower === 'grey' || lower === 'gray') bg = '#868e96';
-                  else if (lower === 'red') bg = '#e03131';
-                  else if (lower === 'blue') bg = '#1971c2';
-                  else if (lower === 'green') bg = '#2f9e44';
-                  else if (lower === 'yellow' || lower === 'gold' || lower === 'golden') bg = '#f08c00';
-                  else if (lower === 'orange') bg = '#f76707';
-                  else if (lower === 'purple') bg = '#7048e8';
+                  const parts = lower.split('/').map((p) => p.trim()).filter(Boolean);
+                  const first = parts[0] || lower;
+                  const second = parts[1] || null;
 
-                  const border = lower === 'white' ? '1px solid #adb5bd' : '1px solid #dee2e6';
+                  function resolveNamedColor(fragment) {
+                    const v = String(fragment || '').trim().toLowerCase();
+                    if (!v) return '#f8f9fa';
+                    if (v.includes('white')) return '#ffffff';
+                    if (v.includes('grey') || v.includes('gray')) return '#868e96';
+
+                    // Rich reds
+                    if (v.includes('maroon') || v.includes('burgundy')) return '#800000';
+                    if (v.includes('red')) return '#e03131';
+
+                    // Blues
+                    if (v.includes('navy')) return '#001f3f';
+                    if (v.includes('sky') || v.includes('light blue')) return '#4dabf7';
+                    if (v.includes('blue')) return '#1971c2';
+
+                    // Greens
+                    if (v.includes('olive')) return '#556b2f';
+                    if (v.includes('green')) return '#2f9e44';
+
+                    // Warm colors
+                    if (v.includes('yellow') || v.includes('gold') || v.includes('golden')) return '#f08c00';
+                    if (v.includes('orange')) return '#f76707';
+
+                    // Pinks / purples
+                    if (v.includes('pink') || v.includes('fuchsia') || v.includes('magenta')) return '#e64980';
+                    if (v.includes('purple')) return '#7048e8';
+
+                    if (v.includes('black')) return '#000000';
+                    return '#f8f9fa';
+                  }
+
+                  const c1 = resolveNamedColor(first);
+                  const c2 = second ? resolveNamedColor(second) : null;
+
+                  const hasWhite = c1 === '#ffffff' || c2 === '#ffffff';
+                  const border = hasWhite ? '1px solid #adb5bd' : '1px solid #dee2e6';
+
+                  const style = {
+                    width: 26,
+                    height: 26,
+                    borderRadius: '50%',
+                    border,
+                    outline: active ? '2px solid #212529' : 'none',
+                    padding: 0,
+                  };
+
+                  if (c2) {
+                    style.backgroundImage = `linear-gradient(to right, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
+                  } else {
+                    style.backgroundColor = c1;
+                  }
 
                   return (
                     <button
@@ -277,15 +579,7 @@ export default function ProductDetailClient({ product }) {
                       type="button"
                       onClick={() => setSelectedColor(key)}
                       title={key}
-                      style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: '50%',
-                        backgroundColor: bg,
-                        border,
-                        outline: active ? '2px solid #212529' : 'none',
-                        padding: 0,
-                      }}
+                      style={style}
                     />
                   );
                 })}
@@ -374,12 +668,13 @@ export default function ProductDetailClient({ product }) {
             >
               Go to cart
             </a>
-            <a
+            <button
+              type="button"
               className="btn btn-outline-dark w-100 text-uppercase fw-semibold"
-              href="/checkout"
+              onClick={handleBuyNow}
             >
               Buy now
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -405,24 +700,137 @@ export default function ProductDetailClient({ product }) {
           ) : null}
         </div>
       ) : null}
-      {zoomImage ? (
+      {zoomImageIndex !== null && images[zoomImageIndex] ? (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            zIndex: 1050,
+            backgroundColor: 'rgba(0,0,0,0.9)',
+            zIndex: 9999,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={() => setZoomImage(null)}
+          onClick={() => setZoomImageIndex(null)}
         >
-          <img
-            src={zoomImage.url}
-            alt={zoomImage.alt || product.name}
-            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }}
-          />
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: 900,
+              height: '100%',
+              maxHeight: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Counter top-left */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 20,
+                left: 20,
+                padding: '4px 12px',
+                borderRadius: 999,
+                backgroundColor: 'rgba(255,255,255,0.9)',
+                fontSize: 12,
+                fontWeight: 600,
+              }}
+            >
+              {zoomImageIndex + 1} / {images.length}
+            </div>
+
+            {/* Close button top-right (larger so it is easy to tap) */}
+            <button
+              type="button"
+              onClick={() => setZoomImageIndex(null)}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 18,
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              aria-label="Close image"
+            >
+              <span style={{ fontSize: 20, lineHeight: 1 }}>×</span>
+            </button>
+
+            {/* Prev / Next arrows - always visible, fade when disabled */}
+            {images.length > 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setZoomImageIndex((prev) => (prev > 0 ? prev - 1 : prev))
+                  }
+                  style={{
+                    position: 'absolute',
+                    left: 24,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    border: 'none',
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: zoomImageIndex === 0 ? 'default' : 'pointer',
+                    opacity: zoomImageIndex === 0 ? 0.4 : 1,
+                  }}
+                  aria-label="Previous image"
+                >
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>‹</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setZoomImageIndex((prev) =>
+                      prev < images.length - 1 ? prev + 1 : prev
+                    )
+                  }
+                  style={{
+                    position: 'absolute',
+                    right: 24,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    border: 'none',
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor:
+                      zoomImageIndex === images.length - 1 ? 'default' : 'pointer',
+                    opacity: zoomImageIndex === images.length - 1 ? 0.4 : 1,
+                  }}
+                  aria-label="Next image"
+                >
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>›</span>
+                </button>
+              </>
+            ) : null}
+
+            <img
+              src={images[zoomImageIndex].url}
+              alt={images[zoomImageIndex].alt || product.name}
+              style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }}
+            />
+          </div>
         </div>
       ) : null}
     </div>

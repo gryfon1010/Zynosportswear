@@ -1,0 +1,39 @@
+.heroBar {
+  background: #0b2a56;
+  color: #ffffff;
+  padding: 46px 0;
+}
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heroTitle {
+  margin: 20px 0 0 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.breadcrumb {
+  font-size: 12px;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #ffffff;
+}
+
+.breadcrumbSep {
+  margin: 0 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.breadcrumbCurrent {
+  color: #ffffff;
+}

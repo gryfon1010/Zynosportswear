@@ -45,18 +45,16 @@ export async function POST(req) {
       );
     }
 
-    const existing = await adminDb
-      .collection('orders')
-      .where('payment.paymentIntentId', '==', session.payment_intent)
-      .limit(1)
-      .get();
+    // Idempotency: use the Stripe checkout session ID as the Firestore
+    // document ID, so repeated processing of the same session does not
+    // create duplicate orders.
+    const orderRef = adminDb.collection('orders').doc(session.id);
+    const existing = await orderRef.get();
 
-    if (!existing.empty) {
-      const doc = existing.docs[0];
-
+    if (existing.exists) {
       const accessToken = generateRandomToken(32);
       const accessTokenHash = sha256Hex(accessToken);
-      await doc.ref.update({
+      await orderRef.update({
         accessTokenHash,
         accessTokenCreatedAt: new Date(),
         accessTokenLastUsedAt: null,
@@ -64,12 +62,12 @@ export async function POST(req) {
       });
 
       const origin = req.headers.get('origin') || '';
-      const orderLink = `${origin}/order/${doc.id}?token=${accessToken}`;
+      const orderLink = `${origin}/order/${orderRef.id}?token=${accessToken}`;
 
       console.log('[MVP] Guest order link (reissued token):', orderLink);
 
       return NextResponse.json({
-        orderId: doc.id,
+        orderId: orderRef.id,
         alreadyCreated: true,
         orderLink,
       });
@@ -120,15 +118,15 @@ export async function POST(req) {
       updatedAt: now,
     };
 
-    const createdRef = await adminDb.collection('orders').add(orderDoc);
+    await orderRef.set(orderDoc, { merge: false });
 
     const origin = req.headers.get('origin') || '';
-    const orderLink = `${origin}/order/${createdRef.id}?token=${accessToken}`;
+    const orderLink = `${origin}/order/${orderRef.id}?token=${accessToken}`;
 
     console.log('[MVP] Guest order link:', orderLink);
 
     return NextResponse.json({
-      orderId: createdRef.id,
+      orderId: orderRef.id,
       accessToken,
       orderLink,
     });

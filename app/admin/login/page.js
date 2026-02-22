@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { auth } from '../../../lib/firebase/client';
 import styles from '../../auth/auth.module.css';
 
@@ -28,6 +28,10 @@ export default function AdminLoginPage() {
     setError(null);
     setLoading(true);
     try {
+      // Use session persistence so the admin must log in again when the
+      // browser/tab is closed, but can navigate within the admin area
+      // without re-authenticating.
+      await setPersistence(auth, browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email.trim(), password);
       router.replace(next);
     } catch (err) {

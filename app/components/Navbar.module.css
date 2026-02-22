@@ -17,7 +17,7 @@
 }
 
 .brandLogo {
-  height: 52px;
+  height: 92px;
   width: auto;
 }
 
@@ -285,9 +285,51 @@
 }
 
 @media (max-width: 991.98px) {
+  .header {
+    padding-top: 6px; /* add a little space above navbar on mobile */
+  }
+
   .row {
     flex-wrap: wrap;
     justify-content: space-between;
+    position: relative;
+    padding: 6px 0 10px; /* slimmer top bar so items sit in a single line */
+  }
+
+  .brand {
+    position: absolute;
+    left: 50%;
+    top: 0; /* align logo with top of bar */
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .brandLogo {
+    height: 60px; /* slightly smaller on mobile so it visually centers in the bar */
+  }
+
+  /* Mobile hamburger button styling */
+  .header .navbar-toggler {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 36px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    border: 2px solid #0d2a57;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 1px #f1f3f5;
+  }
+
+  .header .navbar-toggler:focus {
+    box-shadow: 0 0 0 1px #0d2a57;
+  }
+
+  .header .navbar-toggler-icon {
+    width: 22px;
+    height: 2px;
+    background-size: 22px 16px;
   }
 
   .navList {
@@ -346,14 +388,14 @@
   /* Mobile navbar close (X) button inside opened menu */
   .mobileCloseButton {
     position: absolute;
-    top: -4px;
-    right: 8px; /* far right side of navbar, aligned horizontally with hamburger */
+    top: 4px; /* move slightly down to align with hamburger and logo */
+    right: 10px; /* right side of navbar */
     border: 1px solid #d10024;
     background: #d10024;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 10px;
     color: #000000; /* black X on red background */
   }
 
