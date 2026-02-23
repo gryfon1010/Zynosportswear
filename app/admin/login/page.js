@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 import { auth } from '../../../lib/firebase/client';
 import styles from '../../auth/auth.module.css';
 
@@ -15,6 +20,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [resetMessage, setResetMessage] = useState('');
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((u) => {
@@ -26,6 +32,7 @@ export default function AdminLoginPage() {
   async function onSubmit(e) {
     e.preventDefault();
     setError(null);
+    setResetMessage('');
     setLoading(true);
     try {
       // Use session persistence so the admin must log in again when the
@@ -41,6 +48,23 @@ export default function AdminLoginPage() {
     }
   }
 
+  async function onForgotPassword(e) {
+    e.preventDefault();
+    setError(null);
+    setResetMessage('');
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError('Please enter your admin email first, then click "Forgot password?"');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, trimmed);
+      setResetMessage('Password reset email sent. Please check your inbox.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send password reset email');
+    }
+  }
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
@@ -51,6 +75,7 @@ export default function AdminLoginPage() {
           </div>
 
           {error ? <div className="alert alert-danger">{error}</div> : null}
+          {resetMessage ? <div className="alert alert-success">{resetMessage}</div> : null}
 
           <div className={`card ${styles.card}`}>
             <div className={`card-body ${styles.cardBody}`}>
@@ -92,9 +117,15 @@ export default function AdminLoginPage() {
                 </button>
               </form>
 
-              <div className="text-center" style={{ marginTop: 14, fontSize: 12 }}>
-                After signing in, your user must be added to Firestore collection{' '}
-                <code>admins</code> with role <code>"admin"</code> and <code>enabled: true</code>.
+              <div className="text-center" style={{ marginTop: 10 }}>
+                <button
+                  type="button"
+                  className="btn btn-link p-0"
+                  style={{ fontSize: 12 }}
+                  onClick={onForgotPassword}
+                >
+                  Forgot password?
+                </button>
               </div>
             </div>
           </div>
