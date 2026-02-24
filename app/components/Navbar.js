@@ -118,7 +118,7 @@ export default function Navbar({ showBlackBar = true } = {}) {
     return all.has(slug);
   }
 
-  const isHomeActive = pathname === '/' || pathname === '/landingpage';
+  const isHomeActive = pathname === '/' || pathname === '/landingpage' || pathname === '/home';
 
   useEffect(() => {
     let cancelled = false;
@@ -263,7 +263,7 @@ export default function Navbar({ showBlackBar = true } = {}) {
       .then(() => {
         // Simple client-side redirect after logout
         if (typeof window !== 'undefined') {
-          window.location.href = '/landingpage';
+          window.location.href = '/home';
         }
       })
       .catch(() => {
@@ -287,10 +287,10 @@ export default function Navbar({ showBlackBar = true } = {}) {
     >
       <div className="container-fluid px-4">
         <div className={styles.row}>
-          <a href="/landingpage" className={styles.brand} aria-label="CGR Sports">
+          <a href="/home" className={styles.brand} aria-label="Cougar Sports">
             <img
               src="/images/CGR logo.png"
-              alt="CGR Sports"
+              alt="Cougar Sports"
               className={styles.brandLogo}
             />
           </a>
@@ -326,7 +326,7 @@ export default function Navbar({ showBlackBar = true } = {}) {
             <div className="collapse navbar-collapse position-relative" id="mainNavbar">
               <ul className={`navbar-nav mx-auto ${styles.navList}`}>
                 <li className="nav-item">
-                  <a className={`${styles.navLink} ${isHomeActive ? styles.active : ''}`} href="/landingpage">
+                  <a className={`${styles.navLink} ${isHomeActive ? styles.active : ''}`} href="/home">
                     HOME
                   </a>
                 </li>

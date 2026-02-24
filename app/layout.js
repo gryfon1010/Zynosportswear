@@ -4,8 +4,11 @@ import BootstrapClient from './BootstrapClient';
 import AppShell from './AppShell';
 
 export const metadata = {
-  title: 'Zynosportswear',
-  description: 'Next.js + Bootstrap starter',
+  title: 'Cougar Sports',
+  description: 'Cougar Sports – premium combat sports gear and apparel.',
+  icons: {
+    icon: '/images/CGR logo.png',
+  },
 };
 
 export const viewport = {
