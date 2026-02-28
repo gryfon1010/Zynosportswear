@@ -143,6 +143,24 @@
   margin: 8px auto 0;
 }
 
+.featuredScroller {
+  overflow: hidden;
+  position: relative;
+  padding: 0 16px;
+}
+
+.featuredTrack {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 18px;
+  padding: 4px 2px 8px;
+  animation: featuredSlide 30s linear infinite;
+}
+
+.featuredSlide {
+  flex: 0 0 240px;
+}
+
 .featuredCard {
   border: 0;
   border-radius: 0;
@@ -154,7 +172,7 @@
 
 .featuredImg {
   width: 100%;
-  height: 240px;
+  height: 280px;
   object-fit: contain;
   object-position: center;
 }
@@ -333,4 +351,41 @@
   .aboutImg {
     min-height: 340px;
   }
+}
+
+@keyframes featuredSlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.featuredArrowLeft,
+.featuredArrowRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #dee2e6;
+  background: #ffffff;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.featuredArrowLeft {
+  left: 4px;
+}
+
+.featuredArrowRight {
+  right: 4px;
 }

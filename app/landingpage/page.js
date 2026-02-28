@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import Navbar from '../components/Navbar';
 import StickyNavbar from '../components/StickyNavbar';
@@ -9,6 +9,7 @@ import FloatingActions from '../FloatingActions';
 
 export default function LandingPage() {
   const [featured, setFeatured] = useState([]);
+  const featuredScrollerRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -90,28 +91,56 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="container py-4">
+      <section className="container-fluid px-0 py-4">
         <div className={styles.sectionTitle}>
           <h2>FEATURED PRODUCTS</h2>
           <div className={styles.sectionTitleLine} />
         </div>
 
-        <div className="row g-4 justify-content-center">
-          {featured.map((p) => {
-            const img = Array.isArray(p?.images) && p.images.length ? p.images[0]?.url : null;
-            return (
-              <div className="col-6 col-lg-3" key={p.id}>
-                <a href={`/product/${p.slug}`} className="text-decoration-none">
-                  <div className={styles.featuredCard}>
-                    {img ? <img className={styles.featuredImg} src={img} alt={p.name} /> : null}
-                    <div className={styles.featuredName}>{p.name}</div>
-                    <div className={styles.featuredCode}>{p.sku || ''}</div>
+        {featured.length ? (
+          <div className={styles.featuredScroller} ref={featuredScrollerRef}>
+            <button
+              type="button"
+              className={styles.featuredArrowLeft}
+              onClick={() => {
+                if (!featuredScrollerRef.current) return;
+                featuredScrollerRef.current.scrollBy({ left: -260, behavior: 'smooth' });
+              }}
+              aria-label="Previous featured product"
+            >
+              ‹
+            </button>
+
+            <div className={styles.featuredTrack}>
+              {[...featured, ...featured].map((p, idx) => {
+                const img = Array.isArray(p?.images) && p.images.length ? p.images[0]?.url : null;
+                return (
+                  <div className={styles.featuredSlide} key={`${p.id}-${idx}`}>
+                    <a href={`/product/${p.slug}`} className="text-decoration-none">
+                      <div className={styles.featuredCard}>
+                        {img ? <img className={styles.featuredImg} src={img} alt={p.name} /> : null}
+                        <div className={styles.featuredName}>{p.name}</div>
+                        <div className={styles.featuredCode}>{p.sku || ''}</div>
+                      </div>
+                    </a>
                   </div>
-                </a>
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              className={styles.featuredArrowRight}
+              onClick={() => {
+                if (!featuredScrollerRef.current) return;
+                featuredScrollerRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+              }}
+              aria-label="Next featured product"
+            >
+              ›
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <section className={styles.aboutSection}>
