@@ -1,0 +1,313 @@
+.subcatCard {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  text-align: center;
+}
+
+.subcatImg {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+}
+
+.subcatImgPlaceholder {
+  width: 100%;
+  height: 200px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.subcatName {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #212529;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Hero Banner Styles */
+.heroBanner {
+  position: relative;
+  height: 400px;
+  min-height: 300px;
+  background: #1a1a1a;
+  overflow: hidden;
+  margin: 0 0 2rem 0;
+}
+
+.heroBannerFullWidth {
+  width: 100%;
+  margin: 0 0 2rem 0;
+}
+
+.heroBgImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.55) 32%,
+    rgba(0, 0, 0, 0.22) 50%,
+    rgba(0, 0, 0, 0) 65%
+  );
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.heroContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  height: 100%;
+  position: relative;
+  z-index: 3;
+}
+
+.heroContent {
+  max-width: 560px;
+}
+
+.heroTagline {
+  color: #ffffff;
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.heroTitle {
+  color: #ffffff;
+  font-size: 48px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* Subcategory Section Styles */
+.subcategorySection {
+  padding: 2rem 0;
+}
+
+/* Promo Card Styles (Large subcategory image) */
+.promoCard {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.promoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.promoCard:hover .promoImage {
+  transform: scale(1.05);
+}
+
+.promoImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.promoOverlay {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  z-index: 3;
+}
+
+.viewAllBtn {
+  display: inline-block;
+  background: #ffffff;
+  color: #000000;
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.viewAllBtn:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.promoTitle {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Product Card Styles */
+.productCard {
+  text-align: center;
+  padding: 10px;
+  transition: transform 0.2s ease;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+}
+
+.productImg {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  object-position: center;
+  margin-bottom: 12px;
+}
+
+.productImgPlaceholder {
+  width: 100%;
+  height: 180px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.productName {
+  font-size: 12px;
+  color: #212529;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Page Card Styles (for subcategory pages grid) */
+.pageCard {
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.pageCard:hover {
+  transform: translateY(-5px);
+}
+
+.pageImg {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  object-position: center;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.pageName {
+  font-size: 11px;
+  color: #212529;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) {
+  .heroBanner {
+    height: 300px;
+  }
+
+  .heroContent {
+    max-width: 520px;
+  }
+  
+  .heroTitle {
+    font-size: 36px;
+  }
+  
+  .promoCard {
+    height: 300px;
+  }
+  
+  .promoTitle {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .heroTitle {
+    font-size: 28px;
+  }
+  
+  .heroTagline {
+    font-size: 12px;
+  }
+  
+  .promoCard {
+    height: 250px;
+  }
+  
+  .promoOverlay {
+    bottom: 20px;
+    left: 20px;
+  }
+  
+  .viewAllBtn {
+    padding: 8px 16px;
+    font-size: 10px;
+  }
+  
+  .promoTitle {
+    font-size: 20px;
+  }
+}
