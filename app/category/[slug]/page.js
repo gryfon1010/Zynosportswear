@@ -36,10 +36,11 @@ export default async function CategoryPage({ params }) {
     current = parent;
   }
 
-  // Check if this is the boxing or MMA category; if so, show subcategories instead of products
+  // Check if this is the boxing, MMA, or fitness category; if so, show subcategories instead of products
   const isBoxingCategory = slug === 'boxing';
   const isMMACategory = slug === 'mma' || slug === 'mixed-martial-arts';
-  const isSpecialCategory = isBoxingCategory || isMMACategory;
+  const isFitnessCategory = slug === 'fitness' || slug === 'fitness-equipment';
+  const isSpecialCategory = isBoxingCategory || isMMACategory || isFitnessCategory;
 
   let subcategories = [];
   let products = [];
@@ -168,7 +169,7 @@ export default async function CategoryPage({ params }) {
                 <div className="col-12 text-center text-md-start">
                   <div className={styles.heroContent}>
                     <p className={styles.heroTagline}>MOVE.IMPROVE.EVOLVE</p>
-                    <h1 className={styles.heroTitle}>{isMMACategory ? 'MMA GEAR' : 'BOXING GEAR'}</h1>
+                    <h1 className={styles.heroTitle}>{isFitnessCategory ? 'FITNESS GEAR' : isMMACategory ? 'MMA GEAR' : 'BOXING GEAR'}</h1>
                   </div>
                 </div>
               </div>
@@ -214,7 +215,7 @@ export default async function CategoryPage({ params }) {
               subcategories={subcategories} 
               categoryName={category.name} 
               categoryImage={null}
-              categoryType={isMMACategory ? 'mma' : 'boxing'}
+              categoryType={isFitnessCategory ? 'fitness' : isMMACategory ? 'mma' : 'boxing'}
             />
           ) : (
             <div className="text-muted">No subcategories in this category yet.</div>

@@ -46,17 +46,53 @@ const MMA_PAGE_IMAGES = [
   'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=400&q=80',
 ];
 
+// Fitness images - completely unique set for fitness category
+const FITNESS_SUBCAT_IMAGES = [
+  'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80',
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
+  'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&q=80',
+  'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&q=80',
+  'https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=800&q=80',
+  'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&q=80',
+  'https://images.unsplash.com/photo-1583473848882-f9a5bc7fd2ee?w=800&q=80',
+];
+
+const FITNESS_PAGE_IMAGES = [
+  'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=400&q=80',
+  'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?w=400&q=80',
+  'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80',
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&q=80',
+  'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&q=80',
+  'https://images.unsplash.com/photo-1598971639058-9f1c605667fd?w=400&q=80',
+  'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400&q=80',
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
+];
+
 export default function BoxingSubcategoriesClient({ subcategories, categoryName, categoryImage, categoryType = 'boxing' }) {
   // Sort subcategories by sortOrder
   const sortedSubcats = [...subcategories].sort((a, b) => a.sortOrder - b.sortOrder);
   
   const isMMA = categoryType === 'mma';
-  const SUBCAT_IMAGES = isMMA ? MMA_SUBCAT_IMAGES : BOXING_SUBCAT_IMAGES;
-  const PAGE_IMAGES = isMMA ? MMA_PAGE_IMAGES : BOXING_PAGE_IMAGES;
-  const heroTitle = isMMA ? 'MMA GEAR' : 'BOXING GEAR';
-  const defaultHeroImage = isMMA 
-    ? 'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?w=1920&q=80'
-    : 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=1920&q=80';
+  const isFitness = categoryType === 'fitness';
+  
+  let SUBCAT_IMAGES, PAGE_IMAGES, heroTitle, defaultHeroImage;
+  
+  if (isFitness) {
+    SUBCAT_IMAGES = FITNESS_SUBCAT_IMAGES;
+    PAGE_IMAGES = FITNESS_PAGE_IMAGES;
+    heroTitle = 'FITNESS GEAR';
+    defaultHeroImage = 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&q=80';
+  } else if (isMMA) {
+    SUBCAT_IMAGES = MMA_SUBCAT_IMAGES;
+    PAGE_IMAGES = MMA_PAGE_IMAGES;
+    heroTitle = 'MMA GEAR';
+    defaultHeroImage = 'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?w=1920&q=80';
+  } else {
+    SUBCAT_IMAGES = BOXING_SUBCAT_IMAGES;
+    PAGE_IMAGES = BOXING_PAGE_IMAGES;
+    heroTitle = 'BOXING GEAR';
+    defaultHeroImage = 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=1920&q=80';
+  }
 
   return (
     <>

@@ -332,11 +332,11 @@ export default function Navbar({ showBlackBar = true } = {}) {
                 </li>
 
                 {cats.map((c) => {
-                  // Keep Sale category available in admin, but avoid showing it here as a dropdown item.
-                  if (String(c?.slug || '') === 'sale') return null;
+                  // Keep Sale and Yoga categories available in admin, but avoid showing them here as a dropdown item.
+                  const slug = String(c?.slug || '');
+                  if (slug === 'sale' || slug === 'yoga') return null;
 
                   const children = Array.isArray(c?.children) ? c.children : [];
-                  const slug = String(c?.slug || '');
                   const isMega = isMegaMenuCategorySlug(slug);
                   const megaGroups = isMega
                     ? getBoxingMegaGroups(c, { allowEmptyGroups: isApparelMegaMenu(slug) })
