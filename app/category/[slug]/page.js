@@ -36,21 +36,25 @@ export default async function CategoryPage({ params }) {
     current = parent;
   }
 
-  // Check if this is the boxing, MMA, or fitness category; if so, show subcategories instead of products
+  // Check if this is the boxing, MMA, fitness, apparel, or collections category; if so, show subcategories instead of products
   const isBoxingCategory = slug === 'boxing';
   const isMMACategory = slug === 'mma' || slug === 'mixed-martial-arts';
   const isFitnessCategory = slug === 'fitness' || slug === 'fitness-equipment';
-  const isSpecialCategory = isBoxingCategory || isMMACategory || isFitnessCategory;
+  const isApparelCategory = slug === 'apparel' || slug === 'apparel-clothing';
+  const isCollectionsCategory = slug === 'collections' || slug === 'shop-collections';
+  const isSpecialCategory = isBoxingCategory || isMMACategory || isFitnessCategory || isApparelCategory || isCollectionsCategory;
 
   let subcategories = [];
   let products = [];
 
   if (isSpecialCategory) {
-    // Fetch subcategories of boxing
+    // Fetch subcategories of the category
     const subcatSnap = await adminDb.collection('categories').where('parentId', '==', category.id).get();
+    console.log(`[DEBUG] Found ${subcatSnap.docs.length} raw subcategories for category ${slug} (${category.id})`);
+    
     subcategories = subcatSnap.docs.map((d) => {
       const data = d.data() || {};
-      return {
+      const subcat = {
         id: d.id,
         name: typeof data.name === 'string' ? data.name : '',
         slug: typeof data.slug === 'string' ? data.slug : '',
@@ -59,14 +63,17 @@ export default async function CategoryPage({ params }) {
         active: data.active !== false,
         sortOrder: Number(data.sortOrder || 0),
       };
-    });
+      console.log(`[DEBUG] Subcategory: ${subcat.name} (slug: ${subcat.slug}, active: ${subcat.active}, parentId: ${category.id})`);
+      return subcat;
+    }).filter((subcat) => subcat.active !== false);
+    
+    console.log(`[DEBUG] After filtering active: ${subcategories.length} subcategories remain`);
 
-    // Fetch child category pages for each subcategory (limit 6 per subcategory)
+    // Fetch child category pages for each subcategory (no limit - show all pages)
     const pagesPromises = subcategories.map(async (subcat) => {
       const pagesSnap = await adminDb
         .collection('categories')
         .where('parentId', '==', subcat.id)
-        .limit(6)
         .get();
 
       const pages = pagesSnap.docs
@@ -169,7 +176,7 @@ export default async function CategoryPage({ params }) {
                 <div className="col-12 text-center text-md-start">
                   <div className={styles.heroContent}>
                     <p className={styles.heroTagline}>MOVE.IMPROVE.EVOLVE</p>
-                    <h1 className={styles.heroTitle}>{isFitnessCategory ? 'FITNESS GEAR' : isMMACategory ? 'MMA GEAR' : 'BOXING GEAR'}</h1>
+                    <h1 className={styles.heroTitle}>{isCollectionsCategory ? 'COLLECTIONS' : isApparelCategory ? 'APPAREL' : isFitnessCategory ? 'FITNESS GEAR' : isMMACategory ? 'MMA GEAR' : 'BOXING GEAR'}</h1>
                   </div>
                 </div>
               </div>
@@ -215,7 +222,7 @@ export default async function CategoryPage({ params }) {
               subcategories={subcategories} 
               categoryName={category.name} 
               categoryImage={null}
-              categoryType={isFitnessCategory ? 'fitness' : isMMACategory ? 'mma' : 'boxing'}
+              categoryType={isCollectionsCategory ? 'collections' : isApparelCategory ? 'apparel' : isFitnessCategory ? 'fitness' : isMMACategory ? 'mma' : 'boxing'}
             />
           ) : (
             <div className="text-muted">No subcategories in this category yet.</div>

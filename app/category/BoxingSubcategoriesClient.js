@@ -68,16 +68,72 @@ const FITNESS_PAGE_IMAGES = [
   'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=80',
 ];
 
+// Apparel images - completely unique set for apparel category
+const APPAREL_SUBCAT_IMAGES = [
+  'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800&q=80',
+  'https://images.unsplash.com/photo-1518459031867-a89b944bffe4?w=800&q=80',
+  'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80',
+  'https://images.unsplash.com/photo-1559582930-bb01987cf4dd?w=800&q=80',
+  'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800&q=80',
+  'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=80',
+  'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=80',
+];
+
+const APPAREL_PAGE_IMAGES = [
+  'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80',
+  'https://images.unsplash.com/photo-1559582930-bb01987cf4dd?w=400&q=80',
+  'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&q=80',
+  'https://images.unsplash.com/photo-1518459031867-a89b944bffe4?w=400&q=80',
+  'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&q=80',
+  'https://images.unsplash.com/photo-1581655353564-d851c5c3a990?w=400&q=80',
+  'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80',
+  'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80',
+];
+
+// Collections images - completely unique set for collections category
+const COLLECTIONS_SUBCAT_IMAGES = [
+  'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800&q=80',
+  'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80',
+  'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?w=800&q=80',
+  'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&q=80',
+  'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=800&q=80',
+  'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&q=80',
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80',
+];
+
+const COLLECTIONS_PAGE_IMAGES = [
+  'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&q=80',
+  'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=80',
+  'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?w=400&q=80',
+  'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=400&q=80',
+  'https://images.unsplash.com/photo-1555597673-b21d5c935865?w=400&q=80',
+  'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&q=80',
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&q=80',
+  'https://images.unsplash.com/photo-1583473848882-f9a5bc7fd2ee?w=400&q=80',
+];
+
 export default function BoxingSubcategoriesClient({ subcategories, categoryName, categoryImage, categoryType = 'boxing' }) {
   // Sort subcategories by sortOrder
   const sortedSubcats = [...subcategories].sort((a, b) => a.sortOrder - b.sortOrder);
   
   const isMMA = categoryType === 'mma';
   const isFitness = categoryType === 'fitness';
+  const isApparel = categoryType === 'apparel';
+  const isCollections = categoryType === 'collections';
   
   let SUBCAT_IMAGES, PAGE_IMAGES, heroTitle, defaultHeroImage;
   
-  if (isFitness) {
+  if (isCollections) {
+    SUBCAT_IMAGES = COLLECTIONS_SUBCAT_IMAGES;
+    PAGE_IMAGES = COLLECTIONS_PAGE_IMAGES;
+    heroTitle = 'COLLECTIONS';
+    defaultHeroImage = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1920&q=80';
+  } else if (isApparel) {
+    SUBCAT_IMAGES = APPAREL_SUBCAT_IMAGES;
+    PAGE_IMAGES = APPAREL_PAGE_IMAGES;
+    heroTitle = 'APPAREL';
+    defaultHeroImage = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1920&q=80';
+  } else if (isFitness) {
     SUBCAT_IMAGES = FITNESS_SUBCAT_IMAGES;
     PAGE_IMAGES = FITNESS_PAGE_IMAGES;
     heroTitle = 'FITNESS GEAR';
@@ -125,8 +181,8 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
           const subcatImage = subcat.image || SUBCAT_IMAGES[index % SUBCAT_IMAGES.length];
           
           return (
-            <section key={subcat.id} className={`${styles.subcategorySection} mb-5`}>
-              <div className="row g-4 align-items-center">
+            <section key={subcat.id} className={`${styles.subcategorySection} mb-5 ${subcat.name === 'Approvals / Certifications' ? 'align-items-start' : ''}`}>
+              <div className={`row g-4 ${subcat.name === 'Approvals / Certifications' ? 'align-items-start' : 'align-items-center'}`}>
                 {/* Large Promotional Image - alternates left/right */}
                 <div className={`col-12 col-lg-6 ${isEven ? 'order-1' : 'order-2'}`}>
                   <a href={`/category/${subcat.slug}`} className="text-decoration-none">
