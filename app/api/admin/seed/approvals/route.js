@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '../../../../lib/admin/auth';
+import { requireAdmin } from '../../../../../lib/admin/auth';
 
 const APPROVALS_SUBCATEGORIES = [
   { name: 'IMMAF Approved', slug: 'immaf-approved' },
