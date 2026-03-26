@@ -90,6 +90,28 @@ const APPAREL_PAGE_IMAGES = [
   'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&q=80',
 ];
 
+// Kids images - completely unique set for kids category with highly relevant kids sports imagery
+const KIDS_SUBCAT_IMAGES = [
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80', // kids boxing gloves
+  'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&q=80', // kids martial arts
+  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80', // kids training
+  'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=800&q=80', // kids sports
+  'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=800&q=80', // kids fitness
+  'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=800&q=80', // kids activities
+  'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80', // youth sports
+];
+
+const KIDS_PAGE_IMAGES = [
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&q=80', // kids boxing gloves
+  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80', // kids punch bag
+  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80', // kids training
+  'https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=400&q=80', // kids sports
+  'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&q=80', // kids fitness
+  'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=400&q=80', // kids activities
+  'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&q=80', // youth sports
+  'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=400&q=80', // kids martial arts
+];
+
 // Collections images - completely unique set for collections category
 const COLLECTIONS_SUBCAT_IMAGES = [
   'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800&q=80',
@@ -120,10 +142,16 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
   const isFitness = categoryType === 'fitness';
   const isApparel = categoryType === 'apparel';
   const isCollections = categoryType === 'collections';
+  const isKids = categoryType === 'kids';
   
   let SUBCAT_IMAGES, PAGE_IMAGES, heroTitle, defaultHeroImage;
   
-  if (isCollections) {
+  if (isKids) {
+    SUBCAT_IMAGES = KIDS_SUBCAT_IMAGES;
+    PAGE_IMAGES = KIDS_PAGE_IMAGES;
+    heroTitle = 'KIDS';
+    defaultHeroImage = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=80';
+  } else if (isCollections) {
     SUBCAT_IMAGES = COLLECTIONS_SUBCAT_IMAGES;
     PAGE_IMAGES = COLLECTIONS_PAGE_IMAGES;
     heroTitle = 'COLLECTIONS';

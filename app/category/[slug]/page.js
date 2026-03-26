@@ -36,13 +36,14 @@ export default async function CategoryPage({ params }) {
     current = parent;
   }
 
-  // Check if this is the boxing, MMA, fitness, apparel, or collections category; if so, show subcategories instead of products
+  // Check if this is the boxing, MMA, fitness, apparel, collections, or kids category; if so, show subcategories instead of products
   const isBoxingCategory = slug === 'boxing';
   const isMMACategory = slug === 'mma' || slug === 'mixed-martial-arts';
   const isFitnessCategory = slug === 'fitness' || slug === 'fitness-equipment';
   const isApparelCategory = slug === 'apparel' || slug === 'apparel-clothing';
   const isCollectionsCategory = slug === 'collections' || slug === 'shop-collections';
-  const isSpecialCategory = isBoxingCategory || isMMACategory || isFitnessCategory || isApparelCategory || isCollectionsCategory;
+  const isKidsCategory = slug === 'kids' || slug === 'kids-sports';
+  const isSpecialCategory = isBoxingCategory || isMMACategory || isFitnessCategory || isApparelCategory || isCollectionsCategory || isKidsCategory;
 
   let subcategories = [];
   let products = [];
@@ -176,7 +177,7 @@ export default async function CategoryPage({ params }) {
                 <div className="col-12 text-center text-md-start">
                   <div className={styles.heroContent}>
                     <p className={styles.heroTagline}>MOVE.IMPROVE.EVOLVE</p>
-                    <h1 className={styles.heroTitle}>{isCollectionsCategory ? 'COLLECTIONS' : isApparelCategory ? 'APPAREL' : isFitnessCategory ? 'FITNESS GEAR' : isMMACategory ? 'MMA GEAR' : 'BOXING GEAR'}</h1>
+                    <h1 className={styles.heroTitle}>{isKidsCategory ? 'KIDS' : isCollectionsCategory ? 'COLLECTIONS' : isApparelCategory ? 'APPAREL' : isFitnessCategory ? 'FITNESS GEAR' : isMMACategory ? 'MMA GEAR' : 'BOXING GEAR'}</h1>
                   </div>
                 </div>
               </div>
@@ -222,7 +223,7 @@ export default async function CategoryPage({ params }) {
               subcategories={subcategories} 
               categoryName={category.name} 
               categoryImage={null}
-              categoryType={isCollectionsCategory ? 'collections' : isApparelCategory ? 'apparel' : isFitnessCategory ? 'fitness' : isMMACategory ? 'mma' : 'boxing'}
+              categoryType={isKidsCategory ? 'kids' : isCollectionsCategory ? 'collections' : isApparelCategory ? 'apparel' : isFitnessCategory ? 'fitness' : isMMACategory ? 'mma' : 'boxing'}
             />
           ) : (
             <div className="text-muted">No subcategories in this category yet.</div>
