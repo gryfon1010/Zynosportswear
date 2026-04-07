@@ -143,10 +143,16 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
   const isApparel = categoryType === 'apparel';
   const isCollections = categoryType === 'collections';
   const isKids = categoryType === 'kids';
+  const isBoxing = categoryType === 'boxing';
   
   let SUBCAT_IMAGES, PAGE_IMAGES, heroTitle, defaultHeroImage;
   
-  if (isKids) {
+  if (isBoxing) {
+    SUBCAT_IMAGES = BOXING_SUBCAT_IMAGES;
+    PAGE_IMAGES = BOXING_PAGE_IMAGES;
+    heroTitle = 'BOXING GEAR';
+    defaultHeroImage = '/images/Boxing Main picture.jpg';
+  } else if (isKids) {
     SUBCAT_IMAGES = KIDS_SUBCAT_IMAGES;
     PAGE_IMAGES = KIDS_PAGE_IMAGES;
     heroTitle = 'KIDS';
@@ -206,7 +212,32 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
         {sortedSubcats.map((subcat, index) => {
           const isEven = index % 2 === 0;
           const hasPages = subcat.pages && subcat.pages.length > 0;
-          const subcatImage = subcat.image || SUBCAT_IMAGES[index % SUBCAT_IMAGES.length];
+          // Use custom images for specific sections
+          const isBoxingGlovesSection = subcat.name === 'Boxing Gloves';
+          const isCoachingEquipmentSection = subcat.name === 'Coaching Equipment';
+          const isPunchBagsSection = subcat.name === 'Punch Bags';
+          const isProtectiveGearSection = subcat.name === 'Protective Gear';
+          const isTrainingEquipmentSection = subcat.name === 'Training Equipment';
+          const isApparelSection = subcat.name === 'Apparel';
+          const customBoxingGloveImage = '/images/Boxing Glove.jpg';
+          const customCoachingEquipmentImage = '/images/Coaching Equipment.jpeg';
+          const customPunchingBagImage = '/images/Punching Bag.jpg';
+          const customProtectiveGearImage = '/images/protective gear.jpg';
+          const customTrainingEquipmentImage = '/images/Training Equipment.jpg';
+          const customApparelImage = '/images/apparel.jpg';
+          const subcatImage = isBoxingGlovesSection 
+            ? customBoxingGloveImage 
+            : isCoachingEquipmentSection
+            ? customCoachingEquipmentImage
+            : isPunchBagsSection
+            ? customPunchingBagImage
+            : isProtectiveGearSection
+            ? customProtectiveGearImage
+            : isTrainingEquipmentSection
+            ? customTrainingEquipmentImage
+            : isApparelSection
+            ? customApparelImage
+            : (subcat.image || SUBCAT_IMAGES[index % SUBCAT_IMAGES.length]);
           
           return (
             <section key={subcat.id} className={`${styles.subcategorySection} mb-5 ${subcat.name === 'Approvals / Certifications' ? 'align-items-start' : ''}`}>
