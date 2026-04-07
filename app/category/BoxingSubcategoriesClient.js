@@ -219,7 +219,7 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
           const isProtectiveGearSection = subcat.name === 'Protective Gear';
           const isTrainingEquipmentSection = subcat.name === 'Training Equipment';
           const isApparelSection = subcat.name === 'Apparel';
-          const customBoxingGloveImage = '/images/Boxing%20Glove.jpg';
+          const customBoxingGloveImage = '/images/Boxing%20Glove.jpeg';
           const customCoachingEquipmentImage = '/images/Coaching%20Equipment.jpeg';
           const customPunchingBagImage = '/images/Punching%20Bag.jpg';
           const customProtectiveGearImage = '/images/protective%20gear.jpg';
