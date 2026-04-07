@@ -176,7 +176,7 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
     SUBCAT_IMAGES = MMA_SUBCAT_IMAGES;
     PAGE_IMAGES = MMA_PAGE_IMAGES;
     heroTitle = 'MMA GEAR';
-    defaultHeroImage = 'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?w=1920&q=80';
+    defaultHeroImage = '/images/MMA%20Main%20Picture.jpg';
   } else {
     SUBCAT_IMAGES = BOXING_SUBCAT_IMAGES;
     PAGE_IMAGES = BOXING_PAGE_IMAGES;
@@ -187,7 +187,7 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
   return (
     <>
       {/* Hero Banner Section */}
-      <section className={styles.heroBanner}>
+      <section className={`${styles.heroBanner} ${isMMA ? styles.heroMMA : ''} ${isBoxing ? styles.heroBoxing : ''}`}>
         <div className={styles.heroOverlay}>
           <div className="container h-100">
             <div className="row h-100 align-items-center">
@@ -212,31 +212,59 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
         {sortedSubcats.map((subcat, index) => {
           const isEven = index % 2 === 0;
           const hasPages = subcat.pages && subcat.pages.length > 0;
+          // Skip Approved Ranges section for MMA category
+          if (isMMA && subcat.name === 'Approved Ranges') {
+            return null;
+          }
           // Use custom images for specific sections
           const isBoxingGlovesSection = subcat.name === 'Boxing Gloves';
+          const isMMAGlovesSection = subcat.name === 'MMA Gloves';
           const isCoachingEquipmentSection = subcat.name === 'Coaching Equipment';
           const isPunchBagsSection = subcat.name === 'Punch Bags';
+          const isMMAPunchBagsSection = subcat.name === 'MMA Punch Bags';
           const isProtectiveGearSection = subcat.name === 'Protective Gear';
           const isTrainingEquipmentSection = subcat.name === 'Training Equipment';
           const isApparelSection = subcat.name === 'Apparel';
+          const isEquipmentBagsSection = subcat.name === 'Equipment Bags';
           const customBoxingGloveImage = '/images/boxing glove.jpg';
+          const customMMAGloveImage = '/images/MMA Gloves.jpg';
           const customCoachingEquipmentImage = '/images/Coaching Equipment.jpeg';
+          const customMMACoachingEquipmentImage = '/images/Coaching equipment.jpg';
           const customPunchingBagImage = '/images/Punching Bag.jpg';
+          const customMMAPunchingBagImage = '/images/MMA Punching Bag.png';
           const customProtectiveGearImage = '/images/protective gear.jpg';
+          const customMMAProtectiveGearImage = '/images/Protective equipment.png';
           const customTrainingEquipmentImage = '/images/Training Equipment.jpg';
+          const customMMATrainingEquipmentImage = '/images/Training equipment MMA Page.jpg';
           const customApparelImage = '/images/apparel.jpg';
+          const customMMAApparelImage = '/images/Apparels MMA Page.png';
+          const customMMAEquipmentBagsImage = '/images/Equipment bag MMA Page.jpg';
           const subcatImage = isBoxingGlovesSection 
             ? customBoxingGloveImage 
+            : (isMMAGlovesSection && isMMA)
+            ? customMMAGloveImage
+            : (isCoachingEquipmentSection && isMMA)
+            ? customMMACoachingEquipmentImage
             : isCoachingEquipmentSection
             ? customCoachingEquipmentImage
+            : (isMMAPunchBagsSection && isMMA)
+            ? customMMAPunchingBagImage
             : isPunchBagsSection
             ? customPunchingBagImage
+            : (isProtectiveGearSection && isMMA)
+            ? customMMAProtectiveGearImage
             : isProtectiveGearSection
             ? customProtectiveGearImage
+            : (isTrainingEquipmentSection && isMMA)
+            ? customMMATrainingEquipmentImage
             : isTrainingEquipmentSection
             ? customTrainingEquipmentImage
+            : (isApparelSection && isMMA)
+            ? customMMAApparelImage
             : isApparelSection
             ? customApparelImage
+            : (isEquipmentBagsSection && isMMA)
+            ? customMMAEquipmentBagsImage
             : (subcat.image || SUBCAT_IMAGES[index % SUBCAT_IMAGES.length]);
           
           return (
