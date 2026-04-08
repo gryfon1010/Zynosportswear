@@ -212,8 +212,8 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
         {sortedSubcats.map((subcat, index) => {
           const isEven = index % 2 === 0;
           const hasPages = subcat.pages && subcat.pages.length > 0;
-          // Skip Approved Ranges section for MMA category
-          if (isMMA && subcat.name === 'Approved Ranges') {
+          // Skip Approved Ranges section for MMA and Boxing categories
+          if ((isMMA || isBoxing) && subcat.name === 'Approved Ranges') {
             return null;
           }
           // Use custom images for specific sections
