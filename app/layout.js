@@ -17,8 +17,8 @@ export const metadata = {
     images: [
       {
         url: '/images/CGR logo.png',
-        width: 512,
-        height: 512,
+        width: 513,
+        height: 513,
         alt: 'Cougar Sports Logo',
       },
     ],
