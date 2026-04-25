@@ -8,6 +8,27 @@ export const metadata = {
   description: 'Cougar Sports – premium combat sports gear and apparel.',
   icons: {
     icon: '/images/CGR logo.png',
+    shortcut: '/images/CGR logo.png',
+    apple: '/images/CGR logo.png',
+  },
+  openGraph: {
+    title: 'Cougar Sports',
+    description: 'Cougar Sports – premium combat sports gear and apparel.',
+    images: [
+      {
+        url: '/images/CGR logo.png',
+        width: 512,
+        height: 512,
+        alt: 'Cougar Sports Logo',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cougar Sports',
+    description: 'Cougar Sports – premium combat sports gear and apparel.',
+    images: ['/images/CGR logo.png'],
   },
 };
 
