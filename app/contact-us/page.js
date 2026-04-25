@@ -28,14 +28,6 @@ export default function ContactUsPage() {
       <section className={styles.contentSection}>
         <div className="container">
           <div className="row">
-            <div className="col-12 col-lg-6">
-              <h2 className={styles.columnTitle}>Leave a comments</h2>
-              <div className={styles.columnDivider} />
-
-              <div className={styles.formPlaceholder}>
-                [contact-form 7 id="17"]
-              </div>
-            </div>
 
             <div className="col-12 col-lg-6">
               <h2 className={styles.columnTitle}>Contact details</h2>

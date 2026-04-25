@@ -166,7 +166,7 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
     SUBCAT_IMAGES = APPAREL_SUBCAT_IMAGES;
     PAGE_IMAGES = APPAREL_PAGE_IMAGES;
     heroTitle = 'APPAREL';
-    defaultHeroImage = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?w=1920&q=80';
+    defaultHeroImage = '/images/Apparel%20main%20top%20image.jpg';
   } else if (isFitness) {
     SUBCAT_IMAGES = FITNESS_SUBCAT_IMAGES;
     PAGE_IMAGES = FITNESS_PAGE_IMAGES;
@@ -226,6 +226,12 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
           const isTrainingEquipmentSection = subcat.name === 'Training Equipment';
           const isApparelSection = subcat.name === 'Apparel';
           const isEquipmentBagsSection = subcat.name === 'Equipment Bags';
+          const isGymGlovesSection = subcat.name === 'Gym Gloves';
+          const isWeightliftingBeltsSection = subcat.name === 'Weightlifting Belts';
+          const isStabilityMobilitySection = subcat.name === 'Stability & Mobility';
+          const isBracesSupportSection = subcat.name === 'Braces & Support';
+          const isGymEssentialsSection = subcat.name === 'Gym Essentials';
+          const isActiveWearSection = subcat.name === 'ACTIVE WEAR';
           const customBoxingGloveImage = '/images/boxing glove.jpg';
           const customMMAGloveImage = '/images/MMA Gloves.jpg';
           const customCoachingEquipmentImage = '/images/Coaching Equipment.jpeg';
@@ -239,6 +245,12 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
           const customApparelImage = '/images/apparel.jpg';
           const customMMAApparelImage = '/images/Apparels MMA Page.png';
           const customMMAEquipmentBagsImage = '/images/Equipment bag MMA Page.jpg';
+          const customGymGlovesImage = '/images/GYM%20Gloves%20Fitness.jpg';
+          const customWeightliftingBeltsImage = '/images/weightlifting%20belts%20fitness.jpg';
+          const customStabilityMobilityImage = '/images/stability%20and%20mobility.jpg';
+          const customBracesSupportImage = '/images/Braces%20and%20support.jpg';
+          const customGymEssentialsImage = '/images/Gym%20essentials.jpg';
+          const customActiveWearImage = '/images/Active%20wear.jpg';
           const subcatImage = isBoxingGlovesSection 
             ? customBoxingGloveImage 
             : (isMMAGlovesSection && isMMA)
@@ -265,6 +277,18 @@ export default function BoxingSubcategoriesClient({ subcategories, categoryName,
             ? customApparelImage
             : (isEquipmentBagsSection && isMMA)
             ? customMMAEquipmentBagsImage
+            : isGymGlovesSection
+            ? customGymGlovesImage
+            : isWeightliftingBeltsSection
+            ? customWeightliftingBeltsImage
+            : isStabilityMobilitySection
+            ? customStabilityMobilityImage
+            : isBracesSupportSection
+            ? customBracesSupportImage
+            : isGymEssentialsSection
+            ? customGymEssentialsImage
+            : isActiveWearSection
+            ? customActiveWearImage
             : (subcat.image || SUBCAT_IMAGES[index % SUBCAT_IMAGES.length]);
           
           return (
