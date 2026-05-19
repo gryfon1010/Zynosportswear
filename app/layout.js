@@ -14,11 +14,11 @@ export const metadata = {
   authors: [{ name: 'Cougar Sports' }],
   icons: {
     icon: [
-      { url: '/images/CGR%20logo.png', sizes: '513x513', type: 'image/png' },
+      { url: '/images/cgr-logo.png', sizes: '513x513', type: 'image/png' },
     ],
-    shortcut: '/images/CGR%20logo.png',
+    shortcut: '/images/cgr-logo.png',
     apple: [
-      { url: '/images/CGR%20logo.png', sizes: '513x513', type: 'image/png' },
+      { url: '/images/cgr-logo.png', sizes: '513x513', type: 'image/png' },
     ],
   },
   alternates: {
@@ -33,7 +33,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://www.cgrsports.com/images/CGR%20logo.png',
+        url: 'https://www.cgrsports.com/images/cgr-logo.png',
         width: 513,
         height: 513,
         alt: 'Cougar Sports Logo',
@@ -44,7 +44,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Cougar Sports - Premium Combat Sports Gear & Apparel',
     description: 'Cougar Sports – premium combat sports gear and apparel for boxing, MMA, fitness, and more.',
-    images: ['https://www.cgrsports.com/images/CGR%20logo.png'],
+    images: ['https://www.cgrsports.com/images/cgr-logo.png'],
   },
   robots: {
     index: true,
@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
     name: 'Cougar Sports',
     alternateName: 'CGR Sports',
     url: 'https://www.cgrsports.com',
-    logo: 'https://www.cgrsports.com/images/CGR%20logo.png',
+    logo: 'https://www.cgrsports.com/images/cgr-logo.png',
     sameAs: [
       'https://www.facebook.com/CGRSportswear',
     ],
