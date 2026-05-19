@@ -1,28 +1,67 @@
 export default function sitemap() {
+  const baseUrl = 'https://www.cgrsports.com';
+  const currentDate = new Date();
+
   return [
     {
-      url: 'https://www.cgrsports.com',
-      lastModified: new Date(),
+      url: baseUrl,
+      lastModified: currentDate,
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
     },
     {
-      url: 'https://www.cgrsports.com/about-us',
-      lastModified: new Date(),
+      url: `${baseUrl}/home`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/about-us`,
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: 'https://www.cgrsports.com/contact-us',
-      lastModified: new Date(),
+      url: `${baseUrl}/contact-us`,
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: 'https://www.cgrsports.com/certificates',
-      lastModified: new Date(),
+      url: `${baseUrl}/certificates`,
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/category/boxing`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/category/mma`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/category/fitness`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/category/apparel`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/cart`,
+      lastModified: currentDate,
+      changeFrequency: 'monthly',
+      priority: 0.5,
     },
   ];
 }
