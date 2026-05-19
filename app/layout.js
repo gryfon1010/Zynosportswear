@@ -4,6 +4,7 @@ import BootstrapClient from './BootstrapClient';
 import AppShell from './AppShell';
 
 export const metadata = {
+  metadataBase: new URL('https://www.cgrsports.com'),
   title: 'Cougar Sports',
   description: 'Cougar Sports – premium combat sports gear and apparel.',
   icons: {
@@ -11,9 +12,13 @@ export const metadata = {
     shortcut: '/images/CGR logo.png',
     apple: '/images/CGR logo.png',
   },
+  alternates: {
+    canonical: 'https://www.cgrsports.com',
+  },
   openGraph: {
     title: 'Cougar Sports',
     description: 'Cougar Sports – premium combat sports gear and apparel.',
+    url: 'https://www.cgrsports.com',
     images: [
       {
         url: '/images/CGR logo.png',
