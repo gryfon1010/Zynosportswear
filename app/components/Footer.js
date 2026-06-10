@@ -82,7 +82,7 @@ export default function Footer() {
             © 2024 - 25 COUGAR SPORTS | All Rights Reserved
           </div>
           <img
-            src="/images/CGR logo.png"
+            src="/images/White CGR logo.jpeg"
             alt="CGR Sports"
             style={{ width: 140, height: 'auto', opacity: 0.9 }}
           />

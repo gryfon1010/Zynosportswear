@@ -1,0 +1,18 @@
+/* Quill Editor Styles */
+@import 'react-quill/dist/quill.snow.css';
+
+.ql-container {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.ql-editor {
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.ql-editor.ql-blank::before {
+  font-style: normal;
+  color: #6c757d;
+}

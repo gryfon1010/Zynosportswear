@@ -86,6 +86,7 @@ export default function Navbar({ showBlackBar = true } = {}) {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [openMobileCategoryIds, setOpenMobileCategoryIds] = useState(() => new Set());
   const [openMobileGroupIds, setOpenMobileGroupIds] = useState(() => new Set());
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [imageTilesByMainSlug, setImageTilesByMainSlug] = useState(() => new Map());
 
@@ -269,6 +270,27 @@ export default function Navbar({ showBlackBar = true } = {}) {
       .catch(() => {
         // ignore logout errors in navbar
       });
+  }
+
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    
+    // Redirect to search results page with query parameter
+    if (typeof window !== 'undefined') {
+      window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    }
+  }
+
+  function handleSearchClick() {
+    const query = searchQuery.trim();
+    if (!query) return;
+    
+    // Redirect to search results page with query parameter
+    if (typeof window !== 'undefined') {
+      window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    }
   }
 
   function handleToggleClick() {
@@ -605,15 +627,17 @@ export default function Navbar({ showBlackBar = true } = {}) {
                   CART
                 </a>
 
-                <form className={styles.search} role="search">
+                <form className={styles.search} role="search" onSubmit={handleSearchSubmit}>
                   <div className="input-group">
                     <input
                       className={`form-control ${styles.searchInput}`}
                       type="search"
                       placeholder="Search for products..."
                       aria-label="Search for products"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <button className={`btn ${styles.searchBtn}`} type="button" aria-label="Search">
+                    <button className={`btn ${styles.searchBtn}`} type="submit" aria-label="Search" onClick={handleSearchClick}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"

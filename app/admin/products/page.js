@@ -2,8 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { auth } from '../../../lib/firebase/client';
 import { authedJson } from '../../../lib/admin/client';
+import 'react-quill/dist/quill.snow.css';
+
+// Dynamic import to avoid SSR issues with Quill
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 export default function AdminProductsPage() {
   const [user, setUser] = useState(null);
@@ -352,7 +357,11 @@ export default function AdminProductsPage() {
     const images = Array.isArray(form.images)
       ? form.images
           .filter((it) => it && typeof it === 'object' && typeof it.url === 'string' && it.url.trim())
-          .map((it) => ({ url: it.url.trim(), alt: (it.alt || '').trim() || null }))
+          .map((it) => ({ 
+            url: it.url.trim(), 
+            alt: (it.alt || '').trim() || null,
+            color: (it.color || '').trim() || null
+          }))
           .slice(0, 20)
       : [];
 
@@ -776,13 +785,32 @@ export default function AdminProductsPage() {
 
             <div className="col-12">
               <label className="form-label">Product description (optional)</label>
-              <textarea
-                className="form-control"
-                rows={5}
-                value={form.description}
-                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                placeholder="Long-form description or HTML (paragraphs, bullet lists, etc.)"
-              />
+              <div style={{ minHeight: 200 }}>
+                <ReactQuill
+                  theme="snow"
+                  value={form.description}
+                  onChange={(value) => setForm((p) => ({ ...p, description: value }))}
+                  modules={{
+                    toolbar: [
+                      [{ 'header': [1, 2, 3, false] }],
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      [{ 'indent': '-1'}, { 'indent': '+1' }],
+                      ['link'],
+                      [{ 'align': [] }],
+                      ['clean']
+                    ]
+                  }}
+                  formats={[
+                    'header',
+                    'bold', 'italic', 'underline', 'strike',
+                    'list', 'bullet', 'indent',
+                    'link', 'align'
+                  ]}
+                  placeholder="Enter product description with formatting (bullets, numbering, bold, etc.)"
+                  style={{ backgroundColor: '#fff' }}
+                />
+              </div>
               <div style={{ marginTop: 6, fontSize: 12, color: '#6c757d' }}>
                 This will appear on the product page under “Product Description”. You can paste plain text or HTML.
               </div>
